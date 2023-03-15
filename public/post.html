@@ -14,15 +14,21 @@
 
     <div class="sidenav">
         <img src="images/3.svg" style="width: 100%; margin-bottom: -60px; margin-top: -60px; margin-left: -10px;">
-        <a class="active" href="index.html"><i class="fa fa-fw fa-home"></i>Home</a>
+        <a href="index.html"><i class="fa fa-fw fa-home"></i>Home</a>
         <a href="feed.html"><i class="fa fa-fw fa-feed"></i>Feed</a>
-        <a href="app"><i class="fa fa-fw fa-paper-plane"></i>Post</a>
+        <a class="active" href="app"><i class="fa fa-fw fa-paper-plane"></i>Post</a>
         <a href="#clients"><i class="fa fa-fw fa-comments"></i>Messages</a>
     </div>
 
     <div class="main">
-        <h2>Index</h2>
-        <p>This is the home page</p>
+        <h2>New Post</h2>
+        <div>
+            <form action="/newpost" method="POST">
+                <label>Your message</label>
+                <input type="text" id="message" name="message"><br>
+                <input type="submit" value="Post">
+            </form>
+        </div>
     </div>
 
 </body>

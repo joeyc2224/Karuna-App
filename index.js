@@ -1,14 +1,33 @@
-const { response } = require('express')
+//express server setup - do node.js in term to run
 const express = require('express')
-const { request } = require('http')
 const app = express()
-
 app.listen(3000, () => console.log('listening on port 3000'))
 
-const path = require('path')
-
+//server html pages from public folder
 app.use(express.static('public'))
 
-app.get('/home', (request, response) => {
-    response.sendFile(path.join(__dirname, '/home.html'))
+app.use(express.json())
+
+app.use(express.urlencoded({ extended: false }));
+
+const path = require('path');
+
+//controller for the main app view, depends on user logged in state
+app.get('/app', (request, response) => {
+    response.redirect('./post.html')
+})
+
+const postData = require('./posts-data.js')
+
+app.post('/newpost', (request, response) => {
+    console.log(request.body)
+    postData.addNewPost(request.body)
+    response.redirect('/postsuccessful.html')
+})
+
+app.get('/getposts', (request, response) => {
+    //console.log(postData.getPosts(3))
+    response.json({
+        posts: postData.getPosts(10)
+    })
 })

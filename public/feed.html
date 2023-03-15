@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Karuna | Home</title>
+</head>
+
+<body>
+
+    <div class="sidenav">
+        <img src="images/3.svg" style="width: 100%; margin-bottom: -60px; margin-top: -60px; margin-left: -10px;">
+        <a href="index.html"><i class="fa fa-fw fa-home"></i>Home</a>
+        <a class="active" href="feed.html"><i class="fa fa-fw fa-feed"></i>Feed</a>
+        <a href="app"><i class="fa fa-fw fa-paper-plane"></i>Post</a>
+        <a href="#clients"><i class="fa fa-fw fa-comments"></i>Messages</a>
+    </div>
+
+    <div class="main">
+        <h2>Latest Posts</h2>
+
+        <div>
+            <ul id="recent-posts"></ul>
+        </div>
+
+        <script>
+            let recentPosts = document.getElementById("recent-posts")
+
+            let recentPostData = []
+
+            fetch("/getposts")
+                .then(response => response.json())
+                .then(fetchedData => {
+                    recentPostData = fetchedData.posts
+                    updateRecentPosts()
+                })
+
+            function updateRecentPosts() {
+                recentPosts.innerHTML = ''
+                recentPostData.forEach(function (post) {
+                    console.log(post)
+
+                    let li = document.createElement('li')
+
+                    let liText = document.createElement('p')
+                    liText.textContent = post.message
+                    li.appendChild(liText)
+
+                    recentPosts.appendChild(li)
+                })
+            }
+
+        </script>
+
+    </div>
+
+</body>
+
+</html>
