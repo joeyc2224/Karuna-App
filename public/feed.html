@@ -50,6 +50,10 @@
                     liText.textContent = post.message
                     li.appendChild(liText)
 
+                    let liLikes = document.createElement('p')
+                    liLikes.textContent = post.likes
+                    li.appendChild(liLikes)
+
                     recentPosts.appendChild(li)
                 })
             }

@@ -28,6 +28,6 @@ app.post('/newpost', (request, response) => {
 app.get('/getposts', (request, response) => {
     //console.log(postData.getPosts(3))
     response.json({
-        posts: postData.getPosts(10)
+        posts: postData.getPosts()
     })
 })
