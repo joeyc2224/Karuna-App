@@ -1,3 +1,8 @@
 # Karuna-App
+Karuna is an ancient Sanskrit word used by Buddhists and is typically translated to mean “compassion” or when referring to any action that is taken to diminish the suffering of others. This concept will be the crux of my social media concept; a new form of online interaction where each post adds real value, and users choose exactly who and what they want to see on their feeds.
+
+While the current state of social media doesn’t inspire much confidence in the feasibility of a healthy alternative, I believe that by combining features inspired by wellbeing apps and aspects of social media we can create an internet space where Karuna (compassion) exists.
+
+A recent habit that I’ve found useful for my own mental health is journaling and mood ratings I do everyday on a mobile app. This will be a feature present in some form on Karuna, with the added element of being able to share it with a select groups of friends and family if the user chooses to do so that day. These type of ‘mood posts’ can contain images and longer blocks of text and will be displayed separate to the main feed. My aim with this is to provide a way for close friends and family, and vice versa, to see how you are really feeling, giving the opportunity to comment or reach out privately.
  
-thre
+There will also be a main feed that users will be familiar with from other platforms, however the main difference being that there will be no traditional ‘like’ count number below each post. The purpose of this is to reduce the anxiety, or motivation, many social media users have over how much traction a post gains. Instead, I hope people will post purely because they believe that they have something important to say, not to purely generate likes. While the like count won’t be visible to viewers, it will still be used on the backend to organise the user’s feeds.
