@@ -12,17 +12,12 @@ app.use(express.urlencoded({ extended: false }));
 
 const path = require('path');
 
-//controller for the main app view, depends on user logged in state
-app.get('/app', (request, response) => {
-    response.redirect('./post.html')
-})
-
 const postData = require('./posts-data.js')
 
 app.post('/newpost', (request, response) => {
     console.log(request.body)
     postData.addNewPost(request.body)
-    response.redirect('/postsuccessful.html')
+    response.redirect('/feed.html')
 })
 
 app.get('/getposts', (request, response) => {

@@ -10,8 +10,8 @@ function addNewPost(post) {
     posts.unshift(myPost)
 }
 
-function getPosts(n = 3) {
-    return posts.slice(0, n)
+function getPosts() {
+    return posts
 }
 
 module.exports = { addNewPost, getPosts }
