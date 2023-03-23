@@ -24,8 +24,24 @@
         <h2>New Post</h2>
         <div>
             <form action="/newpost" method="POST">
-                <label>Your message</label>
+                <label>How are you feeling?:</label>
+                <select name="mood" id="mood">
+                    <optgroup label="Happy">
+                        <option value="Calm">Calm</option>
+                        <option value="Pleasant">Pleasant</option>
+                        <option value="Confident">Confident</option>
+                        <option value="Supported">Supported</option>
+                    </optgroup>
+                    <optgroup label="Happy">
+                        <option value="Tired">Tired</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Bored">Bored</option>
+                    </optgroup>
+                </select>
+                <br><br>
+                <label>What did you do today?:</label>
                 <input type="text" id="message" name="message"><br>
+                <br>
                 <input type="submit" value="Post">
             </form>
         </div>

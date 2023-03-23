@@ -1,3 +1,4 @@
+//Data plan for the user's profile
 userProfile = {
     userID: 46778,
     username: "joey",

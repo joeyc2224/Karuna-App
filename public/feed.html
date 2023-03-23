@@ -46,6 +46,10 @@
 
                     let li = document.createElement('li')
 
+                    let liMood = document.createElement('p')
+                    liMood.textContent = post.mood
+                    li.appendChild(liMood)
+
                     let liText = document.createElement('p')
                     liText.textContent = post.message
                     li.appendChild(liText)
