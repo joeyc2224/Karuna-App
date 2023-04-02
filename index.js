@@ -34,7 +34,7 @@ app.use(cookieParser());
 app.use(sessions({
     secret: sessionSecret,
     saveUninitialized: true,
-    cookie: { maxAge: tensecs },
+    cookie: { maxAge: oneHour },
     resave: false
 }));
 
@@ -55,7 +55,7 @@ function checkLoggedIn(request, response, nextAction) {
             nextAction()
         } else {
             request.session.destroy()
-            return response.redirect('/user-views/no-login.html')
+            return response.redirect('/user-views/login.html')
         }
     }
 }
@@ -87,7 +87,7 @@ app.post('/pagecheck', async (request, response) => {
     await users.setLoggedIn(request.session.userid, false)
     request.session.destroy()
     await console.log(users.getUsers())
-    response.redirect('/user-views/no-login.html')
+    response.redirect('/user-views/login.html')
 })
 
 //controller for login

@@ -4,27 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../css/login.css">
     <title>Document</title>
 </head>
 <body>
-    <h2>Simple Social - User Registration</h2>
-    <nav>
-        <a href="./login.html">Login</a>
-        <a href="./no-login.html">Logout</a>
-        <a href="./register.html">Register</a>
-        <a href="../app">Application</a>
-    </nav>
-    <h2>Simple Frontend Social</h2>
-    <form action="/register" method="POST">
-        <label>Username</label>
-        <input type="text" id="username" name="username"><br>
-        <label>Password</label>
-        <input type="text" id="password" name="password"><br>
-        <input type="submit" value="Register">
-    </form>
-    
-    
 
-    <script></script>
+    <div class="login-page">
+        <div class="form">
+            <div class="login-header">
+                <img src="../images/black-tall.svg">
+                <p>Please enter credentials to register.</p>
+            </div>
+            <form action="/register" method="POST">
+                <input type="text" id="username" name="username" placeholder="Username"><br>
+                <input type="text" id="password" name="password" placeholder="Password"><br>
+                <button type="submit" value="Register">Sign Up</button>
+                <p class="message">Already a member? <a href="login.html">Login here</a></p>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

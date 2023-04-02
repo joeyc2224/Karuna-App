@@ -10,17 +10,20 @@
 </head>
 
 <body>
-    <img src="../images/black-tall.svg" style="width: 40%;">
-    <h2>Login</h2>
-
-    <form action="/login" method="POST">
-        <label>Username</label>
-        <input type="text" id="username" name="username"><br>
-        <label>Password</label>
-        <input type="text" id="password" name="password"><br>
-        <input type="submit" value="Login">
-    </form>
-
+    <div class="login-page">
+        <div class="form">
+            <div class="login-header">
+                <img src="../images/black-tall.svg">
+                <p>Please enter your credentials to login.</p>
+            </div>
+            <form action="/login" method="POST" class="login-form">
+                <input type="text" id="username" name="username" placeholder="Username"><br>
+                <input type="text" id="password" name="password" placeholder="Password"><br>
+                <button type="submit" value="Login">Login</button>
+                <p class="message">Not registered? <a href="register.html">Create an account</a></p>
+            </form>
+        </div>
+    </div>
 </body>
 
 </html>
