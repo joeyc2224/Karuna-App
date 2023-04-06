@@ -75,10 +75,7 @@ app.get('/logout', async (request, response) => {
 })
 
 app.post('/pagecheck', async (request, response) => {
-    await users.setLoggedIn(request.session.userid, false)
-    request.session.destroy()
-    await console.log(users.getUsers())
-    response.redirect('/user-views/login.html')
+    //need some kind of function to check if the user is still logged in when accessing html
 })
 
 //controller for login
