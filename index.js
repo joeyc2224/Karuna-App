@@ -9,7 +9,7 @@ const app = express()
 app.listen(3000, () => console.log('listening on port 3000'))
 
 //server html pages from public folder
-app.use(express.static('public', {index: 'user-views/login.html'}))
+app.use(express.static('public', { index: 'user-views/login.html' }))
 
 app.use(express.json())
 
@@ -66,15 +66,6 @@ app.get('/app', checkLoggedIn, (request, response) => {
     response.redirect('home.html')
 })
 
-app.get('/feed', checkLoggedIn, (request, response) => {
-    // response.redirect('./application.html')
-    response.redirect('feed.html')
-})
-
-app.get('/post', checkLoggedIn, (request, response) => {
-    // response.redirect('./application.html')
-    response.redirect('post.html')
-})
 
 app.get('/logout', async (request, response) => {
     await users.setLoggedIn(request.session.userid, false)
@@ -132,9 +123,8 @@ app.post('/register', async (request, response) => {
 
 
 //posting/posts functions
-app.post('/newpost', (request, response) => {
-    console.log(request.body)
-    postData.addNewPost(request.body)
+app.post('/newpost', async (request, response) => {
+    await postData.addNewPost(request.session.userid, request.body)
     response.redirect('/feed.html')
 })
 

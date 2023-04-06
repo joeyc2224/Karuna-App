@@ -3,32 +3,27 @@ const { Schema, model } = mongoose;
 
 const postSchema = new Schema({
     postedBy: String,
-    video: String,
-    caption: String,
+    mood: String,
+    message: String,
     likes: Number,
     time: Date,
-    day: Number,
     comments: [{
         commentBy: String,
         comment: String,
+        likes: Number,
         time: Date,
     }]
 })
 
 const Posts = model('Posts', postSchema);
 
-function addNewPost(post) {
+function addNewPost(userID, post) {
     let myPost = {
-        postedBy: "Username",
-        video: post.videoSelect + "#autoplay;loop;hide-title;",
-        caption: post.message,
-        likes: 5,
+        postedBy: userID,
+        mood: post.mood,
+        message: post.message,
+        likes: 0,
         time: Date.now(),
-        day: 2,
-        comments: [{
-            commentBy: "Jimmy",
-            comment: "Nice vid mate, really good",
-        }]
     }
     //create new collection data in mongo
     Posts.create(myPost)
