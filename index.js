@@ -66,6 +66,10 @@ app.get('/app', checkLoggedIn, (request, response) => {
     response.redirect('home.html')
 })
 
+app.get('/signup', checkLoggedIn, (request, response) => {
+    response.redirect('/user-views/register.html')
+})
+
 
 app.get('/logout', async (request, response) => {
     await users.setLoggedIn(request.session.userid, false)
