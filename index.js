@@ -66,7 +66,7 @@ app.get('/app', checkLoggedIn, (request, response) => {
     response.redirect('home.html')
 })
 
-app.get('/signup', checkLoggedIn, (request, response) => {
+app.get('/signup', (request, response) => {
     response.redirect('/user-views/register.html')
 })
 
