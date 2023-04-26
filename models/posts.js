@@ -48,4 +48,10 @@ async function getPosts(n = 20) {
     return data;
 }
 
-module.exports = { addNewPost, getPosts }
+async function likePost(likedPostID) {
+    console.log("like added to" + likedPostID)
+    await Posts.findByIdAndUpdate(likedPostID, { $inc: { likes: 1 } })
+
+}
+
+module.exports = { addNewPost, getPosts, likePost }

@@ -36,9 +36,12 @@
                             <%= post.time %>
                         </p>
 
-                        <button class="like-btn">
-                            Likes: <%= post.likes %>
-                        </button>
+                        <form action="/like" method="POST">
+                            <button class="like-btn" name="id" value=<%=post._id %>>
+                                Likes: <%= post.likes %>
+                            </button>
+                        </form>
+
 
                         <hr>
 

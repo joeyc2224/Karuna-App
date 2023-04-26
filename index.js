@@ -183,6 +183,8 @@ app.get('/getposts', async (request, response) => {
     })
 })
 
-
-
+app.post('/like', async (request, response) => {
+    likedPostID = request.body.id
+    await postData.likePost(likedPostID)
+})
 
