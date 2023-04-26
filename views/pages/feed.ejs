@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Feed' }); %>
+        <link rel="stylesheet" type="text/css" href="css/feed.css">
+</head>
+
+<body>
+
+    <%- include('../partials/sidenav'); %>
+
+        <div class="main">
+
+            <h2>Latest Posts (with ejs variables)</h2>
+            <hr>
+
+            <div id="post-container">
+
+                <% posts.forEach(function(post) { %>
+                    <div class="post">
+
+                        <p class="user">
+                            User: <%= post.postedBy %>
+                        </p>
+
+                        <p class="mood">
+                            Currently feeling: <%= post.mood %>
+                        </p>
+
+                        <p class="message">
+                            <%= post.message %>
+                        </p>
+
+                        <p>
+                            <%= post.time %>
+                        </p>
+
+                        <button class="like-btn">
+                            Likes: <%= post.likes %>
+                        </button>
+
+                        <hr>
+
+                    </div>
+                    <% }); %>
+            </div>
+
+        </div>
+
+
+</body>
+
+</html>

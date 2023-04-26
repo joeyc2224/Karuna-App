@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Karuna | Post</title>
+</head>
+
+<body>
+
+    <div class="sidenav">
+        <img src="images/white-long.svg"
+            style="width: 100%; margin-bottom: -60px; margin-top: -60px; margin-left: -10px;">
+        <a href="/home"><i class="fa fa-fw fa-home"></i>Home</a>
+        <a class="active" href="/post"><i class="fa fa-fw fa-paper-plane"></i>Post</a>
+        <a href="/feed"><i class="fa fa-fw fa-feed"></i>Feed</a>
+        <a href="/logout" style="position: absolute; bottom: 0;width: 100%;"><i
+            class="fa fa-fw fa-sign-out"></i>Logout</a>
+
+    </div>
+
+    <div class="main">
+        <h2>Daily Check In</h2>
+        <div>
+            <form action="/newpost" method="POST">
+                <label>How are you feeling?:</label>
+                <select name="mood" id="mood">
+                    <optgroup label="Well">
+                        <option value="Calm">Calm</option>
+                        <option value="Pleasant">Pleasant</option>
+                        <option value="Confident">Confident</option>
+                        <option value="Supported">Supported</option>
+                    </optgroup>
+                    <optgroup label="Bad">
+                        <option value="Tired">Tired</option>
+                        <option value="Sad">Sad</option>
+                        <option value="Bored">Bored</option>
+                    </optgroup>
+                </select>
+                <br><br>
+                <label>What did you do today?:</label>
+                <input type="text" id="message" name="message"><br>
+                <br>
+                <input type="submit" value="Post">
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
