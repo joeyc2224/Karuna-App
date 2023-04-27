@@ -65,7 +65,9 @@ function checkLoggedIn(request, response, nextAction) {
 
 //playing with ejs
 app.get('/', checkLoggedIn, function (request, response) {
-    response.render('pages/home');
+    response.render('pages/home', {
+        page: "home"//for setting active class on navbar
+    });
 });
 
 app.get('/home', checkLoggedIn, function (request, response) {
@@ -74,37 +76,40 @@ app.get('/home', checkLoggedIn, function (request, response) {
 
     response.render('pages/home', {
         username: username,//passes loggged in user's name to display as ejs variable
+        page: "home"
     });
 
 });
 
-//user in app view routes, always checks logged in state
-// app.get('/', checkLoggedIn, (request, response) => {
-//     res.render('pages/home');
-// })
-
-// app.get('/home', checkLoggedIn, (request, response) => {
-//     res.render('pages/home');
-// })
-
 app.get('/post', checkLoggedIn, (request, response) => {
-    response.sendFile(path.resolve(__dirname, 'views/pages/post.html'))
+    response.render('pages/post', {
+        page: "post"//for setting active class on navbar
+    });
 })
 
-//ejs based feed alternative
+//ejs based feed 
 app.get('/feed', checkLoggedIn, async (request, response) => {
 
     var posts = await postData.getPosts()//get posts and store
 
     response.render('pages/feed', {
-        posts: posts,
+        posts: posts,//post data sent as variable
+        page: "feed"//for setting active class on navbar
     });
 
 })
 
-// app.get('/feed', checkLoggedIn, (request, response) => {
-//     response.sendFile(path.resolve(__dirname, 'views/pages/feed.html'))
-// })
+app.get('/profile', checkLoggedIn, async (request, response) => {
+
+    var userData = await users.findUser(request.session.userid)
+    console.log(userData)
+
+    response.render('pages/profile', {
+        user: userData,
+        page: "profile"//for setting active class on navbar
+    });
+
+})
 
 
 //user login routes
@@ -120,25 +125,28 @@ app.get('/loginfailed', (request, response) => {
     response.sendFile(path.resolve(__dirname, 'views/login/failed-login.html'))
 })
 
+app.get('/signupfailed', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'views/login/failed-signup.html'))
+})
+
 
 
 //routes for account functions
 app.get('/logout', async (request, response) => {
+    console.log('User ' + request.session.userid + " logged out...")
     await users.setLoggedIn(request.session.userid, false)
     request.session.destroy()
-    await console.log(users.getUsers())
-    response.sendFile(path.resolve(__dirname, 'views/login/login.html'))
+    response.redirect('/login')
 })
 
 //controller for login
 app.post('/login', async (request, response) => {
+
     let userData = request.body
-    console.log(userData)
 
     if (await users.findUser(userData.username)) {
-        console.log('user found')
         if (await users.checkPassword(userData.username, userData.password)) {//if user exists with correct password
-            console.log('password matches')
+            console.log('User ' + userData.username + " logged in...")
             request.session.userid = userData.username
             await users.setLoggedIn(userData.username, true)
             response.redirect('/home')
@@ -158,13 +166,12 @@ app.post('/register', async (request, response) => {
     let userData = request.body
     if (await users.findUser(userData.username)) {
         console.log('user exists')
-        response.json({
-            status: 'failed',
-            error: 'user exists'
-        })
+        response.redirect('/signupfailed')
     } else {
-        users.newUser(userData.username, userData.password)
-        response.redirect('/loginfailed')
+        users.newUser(userData.username, userData.password)//adds user to db
+        request.session.userid = userData.username
+        await users.setLoggedIn(userData.username, true)//then logs them in
+        response.redirect('/home')
     }
     console.log(users.getUsers())
 })
@@ -177,14 +184,11 @@ app.post('/newpost', async (request, response) => {
     response.redirect('/feed')
 })
 
-app.get('/getposts', async (request, response) => {
-    response.json({
-        posts: await postData.getPosts()
-    })
-})
-
 app.post('/like', async (request, response) => {
     likedPostID = request.body.id
     await postData.likePost(likedPostID)
+    response.redirect('/feed')
 })
+
+
 

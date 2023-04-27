@@ -4,7 +4,16 @@ const { Schema, model } = mongoose;
 const userSchema = new Schema({
     username: String,
     password: String,
-    loggedin: Boolean
+    loggedin: Boolean,
+    allies: [{
+        userID: String,
+    }],
+    followers: [{
+        userID: String,
+    }],
+    following: [{
+        userID: String,
+    }]
 });
 
 const Users = model('Users', userSchema);//users collection in Karuna database
@@ -68,9 +77,4 @@ async function isLoggedIn(username) {
     return false
 }
 
-exports.newUser = newUser;
-exports.getUsers = getUsers;
-exports.findUser = findUser;
-exports.checkPassword = checkPassword;
-exports.setLoggedIn = setLoggedIn;
-exports.isLoggedIn = isLoggedIn;
+module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn,isLoggedIn}

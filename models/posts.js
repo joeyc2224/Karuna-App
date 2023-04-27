@@ -54,4 +54,4 @@ async function likePost(likedPostID) {
 
 }
 
-module.exports = { addNewPost, getPosts, likePost }
+module.exports = { addNewPost, getPosts, likePost, }

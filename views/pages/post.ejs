@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Post' }); %>
+</head>
+
+<body>
+
+    <%- include('../partials/sidenav'); %>
+
+        <div class="main">
+
+            <h2>Daily Check In</h2>
+
+            <div>
+                <form action="/newpost" method="POST">
+                    <label>How are you feeling?:</label>
+                    <select name="mood" id="mood">
+                        <optgroup label="Well">
+                            <option value="Calm">Calm</option>
+                            <option value="Pleasant">Pleasant</option>
+                            <option value="Confident">Confident</option>
+                            <option value="Supported">Supported</option>
+                        </optgroup>
+                        <optgroup label="Bad">
+                            <option value="Tired">Tired</option>
+                            <option value="Sad">Sad</option>
+                            <option value="Bored">Bored</option>
+                        </optgroup>
+                    </select>
+                    <br><br>
+                    <label>What did you do today?:</label>
+                    <input type="text" id="message" name="message"><br>
+                    <br>
+                    <input type="submit" value="Post">
+                </form>
+            </div>
+
+        </div>
+
+</body>
+
+</html>
