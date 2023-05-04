@@ -21,7 +21,12 @@
                     <div class="post">
 
                         <p class="user">
-                            User: <%= post.postedBy %>
+
+                        <form action='/viewprofile' method='post'>
+                            <input type='hidden' value='<%= post.postedBy %>' name='name' />
+                            <input class="user-link" type='submit' value="<%= post.postedBy %>" />
+                        </form>
+
                         </p>
 
                         <p class="mood">
@@ -36,12 +41,10 @@
                             <%= post.time %>
                         </p>
 
-                        <form action="/like" method="POST">
-                            <button class="like-btn" name="id" value=<%=post._id %>>
-                                Likes: <%= post.likes %>
-                            </button>
-                        </form>
 
+                        <button onclick="processLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+                            Likes: <%= post.likes %>
+                        </button>
 
                         <hr>
 
@@ -49,8 +52,27 @@
                     <% }); %>
             </div>
 
-        </div>
+            <script>
+                function processLike(postID) {
+                    let options = {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            likedPostID: postID
+                        })
+                    }
+                    fetch('/like', options)
+                        .then(response => response.json())
+                        .then(fetchedData => {
+                            document.getElementById(postID).innerHTML = fetchedData.likeNum
+                        })
+                }
+            </script>
 
+
+        </div>
 
 </body>
 

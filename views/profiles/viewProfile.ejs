@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
+        <link rel="stylesheet" type="text/css" href="css/profile.css">
+</head>
+
+<body>
+
+    <%- include('../partials/sidenav'); %>
+
+        <div class="main profile">
+
+            <img class="profile-image" src="images/user.png">
+
+            <h2>
+                <%= user.username %>
+            </h2>
+
+            <form action='/follow' method='post'>
+                <input type='hidden' value='<%= user.username %>' name='name' />
+                <input type='submit' value="Follow" />
+            </form>
+
+            <div class="stats">
+
+                <div>
+                    <p class="title">
+                        Followers
+                    </p>
+
+                    <p>
+                        <%= user.followers.length %>
+                    </p>
+                </div>
+
+                <div>
+                    <p class="title">
+                        Following
+                    </p>
+
+                    <p>
+                        <%= user.following.length %>
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+</body>
+
+</html>

@@ -5,8 +5,11 @@ const postSchema = new Schema({
     postedBy: String,
     mood: String,
     message: String,
-    likes: Number,
     time: Date,
+    likes: Number,
+    likedBy: [{
+        username: String
+    }],
     comments: [{
         commentBy: String,
         comment: String,
@@ -48,10 +51,25 @@ async function getPosts(n = 20) {
     return data;
 }
 
-async function likePost(likedPostID) {
-    console.log("like added to" + likedPostID)
+async function likePost(likedPostID, likedByID) {
+
     await Posts.findByIdAndUpdate(likedPostID, { $inc: { likes: 1 } })
 
+    let newLike = {
+        username: likedByID
+    }
+
+    await Posts.findByIdAndUpdate(likedPostID, { $push: { likedBy: newLike } }).exec()
 }
 
-module.exports = { addNewPost, getPosts, likePost, }
+async function refreshLikes(likedPostID) {
+
+    await Posts.findById(likedPostID)
+        .then(mongoData => {
+            likes = mongoData.likes;
+        })
+
+    return likes;
+}
+
+module.exports = { addNewPost, getPosts, likePost, refreshLikes }

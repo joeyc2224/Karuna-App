@@ -6,13 +6,13 @@ const userSchema = new Schema({
     password: String,
     loggedin: Boolean,
     allies: [{
-        userID: String,
+        username: String,
     }],
     followers: [{
-        userID: String,
+        username: String,
     }],
     following: [{
-        userID: String,
+        username: String,
     }]
 });
 
@@ -77,4 +77,17 @@ async function isLoggedIn(username) {
     return false
 }
 
-module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn,isLoggedIn}
+async function followUser(followee, follower) {
+
+    let newFollower = {
+        username: follower,
+    }
+    let newFollowing = {
+        username: followee,
+    }
+
+    await Users.findOneAndUpdate({ username: followee }, { $push: { followers: newFollower } }).exec()//add new follower
+    await Users.findOneAndUpdate({ username: follower }, { $push: { following: newFollowing } }).exec()//add new following
+}
+
+module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser }

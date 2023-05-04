@@ -1,0 +1,30 @@
+.main.profile {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
+
+.stats .title {
+    font-size: 20px;
+    margin-bottom: -15px;
+}
+
+.allies {
+    margin: auto;
+    margin-top: -20px;
+    overflow-y: scroll;
+    height: 100px;
+    width: 80%;
+    display: block;
+    background-color: lightgray;
+}

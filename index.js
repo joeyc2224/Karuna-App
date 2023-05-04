@@ -49,7 +49,9 @@ mongoose.connect("mongodb+srv://joeyc123:" + mongoDBPassword + "@karunadb.onlhva
 
 //data models import
 const users = require('./models/users')
-const postData = require('./models/posts.js')
+const postData = require('./models/posts.js');
+const { name } = require('ejs');
+const { stringify } = require('querystring');
 
 //user check login function
 function checkLoggedIn(request, response, nextAction) {
@@ -99,13 +101,25 @@ app.get('/feed', checkLoggedIn, async (request, response) => {
 
 })
 
-app.get('/profile', checkLoggedIn, async (request, response) => {
+app.get('/myprofile', checkLoggedIn, async (request, response) => {
 
-    var userData = await users.findUser(request.session.userid)
-    console.log(userData)
+    var userData = await users.findUser(request.session.userid)//get user data from users.js
+    //console.log(userData)
 
-    response.render('pages/profile', {
-        user: userData,
+    response.render('profiles/myProfile', {
+        user: userData, //user data 
+        page: "profile"//for setting active class on navbar
+    });
+
+})
+
+app.post('/viewprofile', checkLoggedIn, async (request, response) => {
+
+    var userData = await users.findUser(request.body.name)//get user data from users.js
+    //console.log(request.body.name)
+
+    response.render('profiles/viewProfile', {
+        user: userData, //user data 
         page: "profile"//for setting active class on navbar
     });
 
@@ -185,10 +199,27 @@ app.post('/newpost', async (request, response) => {
 })
 
 app.post('/like', async (request, response) => {
-    likedPostID = request.body.id
-    await postData.likePost(likedPostID)
-    response.redirect('/feed')
+
+    likedPostID = request.body.likedPostID
+
+    await postData.likePost(likedPostID, request.session.userid)
+
+    //stuff that provides new like value but not working without refreshing whole page yet
+    // var likes = await postData.refreshLikes(likedPostID)
+    // console.log(likes)
+
+    //response.redirect('/feed')
+
+    response.json(
+        { likeNum: await postData.refreshLikes(likedPostID) }
+    )
 })
+
+app.post('/follow', async (request, response) => {
+    await users.followUser(request.body.name, request.session.userid)
+    response.redirect('/home')
+})
+
 
 
 
