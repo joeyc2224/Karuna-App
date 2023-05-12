@@ -12,60 +12,86 @@
 
         <div class="main profile">
 
-            <img class="profile-image" src="images/user.png">
-
-            <h2>
-                <%= user.username %>
-            </h2>
-
-            <button>
-                Edit Profile
-            </button>
-
-            <div class="stats">
-
-                <div>
-                    <p class="title">
-                        Followers
-                    </p>
-
-                    <p>
-                        <%= user.followers.length %>
-                    </p>
-                </div>
-
-                <div>
-                    <p class="title">
-                        Following
-                    </p>
-
-                    <p>
-                        <%= user.following.length %>
-                    </p>
-                </div>
-
-            </div>
+            <img class="profile-image" <% if (!user.profilePic) { %> src="images/user.png" <% } else { %> src= "<%=
+                    user.profilePic %>" <% } %> >
 
 
-            <h2>Followers</h2>
-            <div class="allies">
 
-                <% user.followers.forEach(function(follower) { %>
-
-                    <div>
+                        <h2>
+                            <%= user.username %>
+                        </h2>
 
                         <p>
-                            <%= follower.username %>
+                            <%= user.bio %>
                         </p>
 
-                    </div>
+                        <br>
 
-                    <% }); %>
+                        <form action="/editprofile" enctype="multipart/form-data" method="POST">
+                            <label>Upload an image:</label>
+                            <input type="file" name="profilePic" accept="image/*" />
+                            <br>
+                            <br><br>
+                            <label>Edit Bio:</label>
+                            <input type="text" id="bio" name="bio">
+                            <br>
+                            <input type="submit" value="Save">
+                        </form>
 
-            </div>
+                        <!-- <button>
+                            Edit Profile
+                        </button> -->
+
+                        <div class="stats">
+
+                            <div>
+                                <p class="title">
+                                    Followers
+                                </p>
+
+                                <p>
+                                    <%= user.followers.length %>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="title">
+                                    Following
+                                </p>
+
+                                <p>
+                                    <%= user.following.length %>
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <h2>Followers</h2>
+                        <div class="allies">
+
+                            <% user.followers.forEach(function(follower) { %>
+
+                                <div>
+
+                                    <p>
+                                        <%= follower.username %>
+                                    </p>
+
+                                </div>
+
+                                <% }); %>
+
+                        </div>
 
         </div>
 
 </body>
+
+<script>
+    function editProfile() {
+
+    }
+</script>
 
 </html>

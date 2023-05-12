@@ -14,7 +14,7 @@
             <h2>Daily Check In</h2>
 
             <div>
-                <form action="/newpost" method="POST">
+                <form action="/newpost" enctype="multipart/form-data" method="POST">
                     <label>How are you feeling?:</label>
                     <select name="mood" id="mood">
                         <optgroup label="Well">
@@ -31,8 +31,11 @@
                     </select>
                     <br><br>
                     <label>What did you do today?:</label>
-                    <input type="text" id="message" name="message"><br>
-                    <br>
+                    <input type="text" id="message" name="message">
+                    <br><br>
+                    <label>Upload an image:</label>
+                    <input type="file" name="myImage" accept="image/*" />
+                    <br><br>
                     <input type="submit" value="Post">
                 </form>
             </div>

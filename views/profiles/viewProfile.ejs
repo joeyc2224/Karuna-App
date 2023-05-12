@@ -12,11 +12,16 @@
 
         <div class="main profile">
 
-            <img class="profile-image" src="images/user.png">
+            <img class="profile-image" <% if (!user.profilePic) { %> src="images/user.png" <% } else { %> src= "<%=
+            user.profilePic %>" <% } %> >
 
             <h2>
                 <%= user.username %>
             </h2>
+
+            <p>
+                <%= user.bio %>
+            </p>
 
             <form action='/follow' method='post'>
                 <input type='hidden' value='<%= user.username %>' name='name' />

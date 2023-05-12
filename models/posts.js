@@ -6,6 +6,7 @@ const postSchema = new Schema({
     mood: String,
     message: String,
     time: Date,
+    imagePath: String,
     likes: Number,
     likedBy: [{
         username: String
@@ -20,13 +21,14 @@ const postSchema = new Schema({
 
 const Posts = model('Posts', postSchema);
 
-function addNewPost(userID, post) {
+function addNewPost(userID, post, imageFile) {
     let myPost = {
         postedBy: userID,
         mood: post.mood,
         message: post.message,
         likes: 0,
         time: Date.now(),
+        imagePath: imageFile,
     }
     //create new collection data in mongo
     Posts.create(myPost)

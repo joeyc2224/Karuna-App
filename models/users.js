@@ -5,6 +5,8 @@ const userSchema = new Schema({
     username: String,
     password: String,
     loggedin: Boolean,
+    profilePic: String,
+    bio: String,
     allies: [{
         username: String,
     }],
@@ -90,4 +92,21 @@ async function followUser(followee, follower) {
     await Users.findOneAndUpdate({ username: follower }, { $push: { following: newFollowing } }).exec()//add new following
 }
 
-module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser }
+async function editProfile(user, data, imageFile) {
+
+    if (data.bio) {
+        await Users.findOneAndUpdate({ username: user }, { bio: data.bio }).exec()
+
+    } else {
+        console.log("bio null")
+    }
+
+    if (imageFile) {
+        await Users.findOneAndUpdate({ username: user }, { profilePic: imageFile }).exec()
+    } else {
+        console.log("pic null")
+    }
+
+}
+
+module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, editProfile }

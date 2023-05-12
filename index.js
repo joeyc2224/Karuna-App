@@ -20,6 +20,9 @@ app.use(express.urlencoded({ extended: false }));
 
 const path = require('path');
 
+const multer = require('multer');
+
+const upload = multer({ dest: './public/uploads/' })
 
 //consts to hold expiry times in ms
 const tensecs = 1000 * 10;
@@ -72,13 +75,13 @@ app.get('/', checkLoggedIn, function (request, response) {
     });
 });
 
-app.get('/home', checkLoggedIn, function (request, response) {
-    //passing data with ejs?
-    var username = request.session.userid
+app.get('/home', checkLoggedIn, async (request, response) => {
+
+    var posts = await postData.getPosts()//get posts and store
 
     response.render('pages/home', {
-        username: username,//passes loggged in user's name to display as ejs variable
-        page: "home"
+        posts: posts,//post data sent as variable
+        page: "home"//for setting active class on navbar
     });
 
 });
@@ -90,11 +93,11 @@ app.get('/post', checkLoggedIn, (request, response) => {
 })
 
 //ejs based feed 
-app.get('/feed', checkLoggedIn, async (request, response) => {
+app.get('/allies', checkLoggedIn, async (request, response) => {
 
     var posts = await postData.getPosts()//get posts and store
 
-    response.render('pages/feed', {
+    response.render('pages/allies', {
         posts: posts,//post data sent as variable
         page: "feed"//for setting active class on navbar
     });
@@ -104,7 +107,6 @@ app.get('/feed', checkLoggedIn, async (request, response) => {
 app.get('/myprofile', checkLoggedIn, async (request, response) => {
 
     var userData = await users.findUser(request.session.userid)//get user data from users.js
-    //console.log(userData)
 
     response.render('profiles/myProfile', {
         user: userData, //user data 
@@ -112,6 +114,19 @@ app.get('/myprofile', checkLoggedIn, async (request, response) => {
     });
 
 })
+
+app.post('/editprofile', upload.single('profilePic'), async (request, response) => {
+
+    let filename = null
+
+    if (request.file && request.file.filename) { //check that a file was passes with a valid name
+        filename = 'uploads/' + request.file.filename
+    }
+
+    await users.editProfile(request.session.userid, request.body, filename)
+    response.redirect('/myprofile')
+})
+
 
 app.post('/viewprofile', checkLoggedIn, async (request, response) => {
 
@@ -124,7 +139,6 @@ app.post('/viewprofile', checkLoggedIn, async (request, response) => {
     });
 
 })
-
 
 //user login routes
 app.get('/login', (request, response) => {
@@ -193,9 +207,15 @@ app.post('/register', async (request, response) => {
 
 
 //post functions
-app.post('/newpost', async (request, response) => {
-    await postData.addNewPost(request.session.userid, request.body)
-    response.redirect('/feed')
+app.post('/newpost', upload.single('myImage'), async (request, response) => {
+
+    let filename = null
+    if (request.file && request.file.filename) { //check that a file was passes with a valid name
+        filename = 'uploads/' + request.file.filename
+    }
+
+    await postData.addNewPost(request.session.userid, request.body, filename)
+    response.redirect('/allies')
 })
 
 app.post('/like', async (request, response) => {
