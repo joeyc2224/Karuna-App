@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(132deg, rgb(65, 80, 95) 0.00%, rgb(57, 57, 57) 100.00%);
+    background: linear-gradient(132deg, rgb(77, 77, 77) 0.00%, rgb(26, 26, 26) 100.00%);
     height: 100%;
     margin: 0;
     background-repeat: no-repeat;
@@ -39,29 +39,39 @@ body {
 }
 
 .form button {
-    font-family: "Roboto", sans-serif;
+    font-weight: 600;
     text-transform: uppercase;
     outline: 0;
-    background-color: #393939;
+    background-color: #1a1a1a;
+    border-radius: 4px;
     width: 100%;
     border: 0;
     padding: 15px;
     color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
+    font-size: 15px;
     cursor: pointer;
+    letter-spacing: 0.5px;
+}
+
+.form button:hover,
+.form button:focus {
+    opacity: .90;
 }
 
 .form .message {
     margin: 15px 0 0;
-    color: #b3b3b3;
-    font-size: 12px;
+    color: #999999;
+    font-size: 13px;
 }
 
 .form .message a {
-    color: #4CAF50;
+    color: #1a1a1a;
     text-decoration: none;
+}
+
+.form .message a:hover {
+    color: #535353;
+    text-decoration: underline;
 }
 
 .container {

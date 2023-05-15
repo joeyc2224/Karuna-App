@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
+//bcrypt import
+const bcrypt = require('bcrypt')
+const saltRounds = 10
+
 const userSchema = new Schema({
     username: String,
     password: String,
@@ -16,6 +20,28 @@ const userSchema = new Schema({
     following: [{
         username: String,
     }]
+});
+
+//create salt and hash when a password is changed
+userSchema.pre('save', function (next) {
+    let user = this;
+
+    // only hash the password if it has been modified (or is new)
+    if (!user.isModified('password')) return next();
+
+    // generate a salt
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+        if (err) return next(err);
+
+        // hash the password using our new salt
+        bcrypt.hash(user.password, salt, function (err, hash) {
+            if (err) return next(err);
+
+            // override the cleartext password with the hashed one
+            user.password = hash;
+            next();
+        });
+    });
 });
 
 const Users = model('Users', userSchema);//users collection in Karuna database
@@ -54,13 +80,15 @@ async function findUser(username) {
     return user;
 }
 
-async function checkPassword(username, password) {
+async function checkPassword(username, password, action) {
     let user = await findUser(username)
-    if (user) {
-        // console.log(user, password)
-        return user.password == password
-    }
-    return false
+    bcrypt.compare(password, user.password)
+        .then(isMatch => {
+            action(isMatch)
+        })
+        .catch(err => {
+            throw err
+        })
 }
 
 async function setLoggedIn(username, state) {
@@ -94,19 +122,33 @@ async function followUser(followee, follower) {
 
 async function editProfile(user, data, imageFile) {
 
+    if (imageFile) {//if pp is changed
+        await Users.findOneAndUpdate({ username: user }, { profilePic: imageFile }).exec()
+    } else {
+        //console.log("pic null")
+    }
+
     if (data.bio) {
         await Users.findOneAndUpdate({ username: user }, { bio: data.bio }).exec()
 
     } else {
-        console.log("bio null")
+        //console.log("bio null")
     }
 
-    if (imageFile) {
-        await Users.findOneAndUpdate({ username: user }, { profilePic: imageFile }).exec()
+    if (data.username) {//if username is changed
+
+        if (await findUser(data.username)) {
+            console.log('user exists')
+            return false//username already exists - Update failed
+        }
+        else {
+            await Users.findOneAndUpdate({ username: user }, { username: data.username }).exec()
+            return true//username changed, tell serve to reload profile with new name
+        }
+
     } else {
-        console.log("pic null")
+        return false//no username change
     }
-
 }
 
 module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, editProfile }

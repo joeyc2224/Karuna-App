@@ -1,0 +1,143 @@
+.post {
+  text-align: center;
+}
+
+.user-link {
+  background-color: transparent;
+  text-decoration: underline;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  font-size: 30px;
+}
+
+user-link:focus {
+  outline: none;
+}
+
+/* post modal css */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* post modal button styling*/
+.btn {
+  font-size: 42px;
+  line-height: 100%;
+  text-decoration: none;
+  padding: 20px 15.25px;
+  display: inline-block;
+  border-radius: 50%;
+  transition: all .2s;
+  position: absolute;
+  bottom: 27px;
+  right: 30px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-post {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.btn::after {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  transition: all .4s;
+}
+
+.btn-post::after {
+  background-color: #1a1a1a;
+}
+
+.btn:hover::after {
+  transform: scaleX(1.2) scaleY(1.2);
+  opacity: 0;
+}
+
+.btn-animated {
+  animation: moveInBottom 5s ease-out;
+  animation-fill-mode: backwards;
+}
+
+
+/* hover over post button */
+[data-title]:hover:after {
+  opacity: 1;
+  transition: all 0.1s ease 0.1s;
+  visibility: visible;
+}
+[data-title]:after {
+  content: attr(data-title);
+  position: absolute;
+  right: -50%;
+  bottom: 70px;
+  font-family: 'Montserrat', sans-serif;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 1px 5px 2px 5px;
+  white-space: nowrap;
+  opacity: 0;
+  z-index: 99999;
+  visibility: hidden;
+}
+
+[data-title] {
+  position: relative;
+}
+
+
+

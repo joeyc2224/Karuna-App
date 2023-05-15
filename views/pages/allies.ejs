@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Feed' }); %>
-        <link rel="stylesheet" type="text/css" href="css/feed.css">
+    <%- include('../partials/head', {pagetitle: 'Karuna | Allies' }); %>
+        <link rel="stylesheet" type="text/css" href="css/allies.css">
 </head>
 
 <body>
@@ -12,7 +12,7 @@
 
         <div class="main">
 
-            <h2>Latest Posts (with ejs variables)</h2>
+            <h2>Allies</h2>
             <hr>
 
             <div id="post-container">
@@ -24,7 +24,12 @@
 
                         <form action='/viewprofile' method='post'>
                             <input type='hidden' value='<%= post.postedBy %>' name='name' />
+
                             <input class="user-link" type='submit' value="<%= post.postedBy %>" />
+                            <!-- 
+                            <button type="submit" class="stdBtn">
+                                <%= post.postedBy %>
+                            </button> -->
                         </form>
 
                         </p>
@@ -37,40 +42,150 @@
                             <%= post.message %>
                         </p>
 
-                        <img src="<%= post.imagePath %>" width="50%">
+                        <% 
+                        let now=Date.now()
+                        let ellapsed=new Date(now-post.time) 
+                        let ellapsedMins=ellapsed.getMinutes()
+                        let ellapsedHours=ellapsed.getHours() - 1 
+                        %>
 
-                        <p>
-                            <%= post.time %>
+                        <p class="time">
+                            <%= ellapsedHours + "hrs "+ ellapsedMins %>mins ago
                         </p>
 
+                        
 
-                        <button onclick="processLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
-                            Likes: <%= post.likes %>
-                        </button>
 
-                        <hr>
+                        
+
+                            <div class="reaction-container">
+
+                                <form action="/reaction" method="POST" style="display: flex; align-items:center;" id="emojiForm">
+                                    <div class="custom-select" >
+                                        <select name="emoji" >
+                                            <option>➕</option>
+                                            <option>👏</option>
+                                            <option>😜</option>
+                                            <option>😔</option>
+                                            <option>👍</option>
+                                            <option>👎</option>
+                                            <option>🙌</option>
+                                            <option>😂</option>
+                                            <option>❤️</option>
+                                        </select>
+                                    </div>
+    
+                                    <input type='hidden' value='<%=post._id %>' name='postID' />
+    
+                                    <button type="submit" class="emoji-submit" id="submitBtn">
+                                        <i class="fa-solid fa-share"></i>
+                                    </button>
+                                </form>
+
+                                <div style="display: flex; overflow-x: hidden;">
+                                    <% post.reactions.forEach(function(reaction) { %>
+                                        <p class="reaction" title="<%= reaction.username %>">
+                                            <%= reaction.reaction %>
+                                        </p>
+                                    <% }); %>
+                                </div>
+
+                            </div>
+
+                            <hr>
 
                     </div>
                     <% }); %>
             </div>
 
             <script>
-                function processLike(postID) {
-                    let options = {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            likedPostID: postID
-                        })
+                //code for custom emoji select form
+                var x, i, j, l, ll, selElmnt, a, b, c;
+
+                x = document.getElementsByClassName("custom-select");
+                l = x.length;
+
+                for (i = 0; i < l; i++) {
+                    selElmnt = x[i].getElementsByTagName("select")[0];
+                    ll = selElmnt.length;
+
+                    a = document.createElement("DIV");
+                    a.setAttribute("class", "select-selected");
+                    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+                    x[i].appendChild(a);
+
+                    b = document.createElement("DIV");
+                    b.setAttribute("class", "select-items select-hide");
+
+                    for (j = 1; j < ll; j++) {
+
+                        c = document.createElement("DIV");
+                        c.innerHTML = selElmnt.options[j].innerHTML;
+
+                        c.addEventListener("click", function (e) {
+
+                            var y, i, k, s, h, sl, yl;
+                            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                            sl = s.length;
+                            h = this.parentNode.previousSibling;
+                            //document.getElementById("emojiForm").submit(); 
+
+                            for (i = 0; i < sl; i++) {
+                                if (s.options[i].innerHTML == this.innerHTML) {
+                                    s.selectedIndex = i;
+                                    h.innerHTML = this.innerHTML;
+                                    y = this.parentNode.getElementsByClassName("same-as-selected");
+                                    yl = y.length;
+
+                                    for (k = 0; k < yl; k++) {
+                                        y[k].removeAttribute("class");
+
+                                    }
+                                    this.setAttribute("class", "same-as-selected");
+                                    break;
+                                }
+                            }
+                            h.click();
+
+                        });
+
+                        b.appendChild(c);
+
                     }
-                    fetch('/like', options)
-                        .then(response => response.json())
-                        .then(fetchedData => {
-                            document.getElementById(postID).innerHTML = fetchedData.likeNum
-                        })
+
+
+
+                    x[i].appendChild(b);
+                    a.addEventListener("click", function (e) {
+                        e.stopPropagation();
+                        closeAllSelect(this);
+                        this.nextSibling.classList.toggle("select-hide");
+                        this.classList.toggle("select-arrow-active");
+                    });
                 }
+
+                function closeAllSelect(elmnt) {
+                    var x, y, i, xl, yl, arrNo = [];
+                    x = document.getElementsByClassName("select-items");
+                    y = document.getElementsByClassName("select-selected");
+                    xl = x.length;
+                    yl = y.length;
+
+                    for (i = 0; i < yl; i++) {
+                        if (elmnt == y[i]) {
+                            arrNo.push(i)
+                        } else {
+                            y[i].classList.remove("select-arrow-active");
+                        }
+                    }
+                    for (i = 0; i < xl; i++) {
+                        if (arrNo.indexOf(i)) {
+                            x[i].classList.add("select-hide");
+                        }
+                    }
+                }
+                document.addEventListener("click", closeAllSelect);
+
             </script>
 
 

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Daily Check In' }); %>
+        <link rel="stylesheet" type="text/css" href="css/journal.css">
+</head>
+
+<body>
+
+    <%- include('../partials/sidenav'); %>
+
+        <div class="main">
+
+            <h2>Wellbeing Journal</h2>
+
+            <div class="tab">
+                <button class="tablinks" id="defaultOpen" onclick="changeTab(event, 'newPost')"><i
+                        class="fa-solid fa-heart-circle-plus fa-fw"></i>Daily Check In</button>
+                <button class="tablinks" onclick="changeTab(event, 'history')"><i
+                        class="fa-solid fa-clock-rotate-left fa-fw"></i>History</button>
+            </div>
+
+            <div id="newPost" class="tabcontent">
+
+                <div>
+                    <form action="/newcheckin" method="POST">
+                        <label>How are you feeling?</label>
+                        <select name="mood" id="mood">
+                            <option value="" disabled selected>Select Mood</option>
+                            <option value="Calm">&#129409;Amazing</option>
+                            <option value="Pleasant">Good</option>
+                            <option value="Confident">Meh</option>
+                            <option value="Supported">Supported</option>
+                            <option value="Tired">Tired</option>
+                            <option value="Sad">Sad</option>
+                            <option value="Bored">Bored</option>
+                        </select>
+                        <br><br>
+
+                        <label>What did you do today?</label>
+                        <textarea name="message" id="message"></textarea>
+                        <br><br>
+
+                        <label>Tags (placeholder):</label>
+                        <span class="tag-cloud">Good Sleep</span>
+                        <span class="tag-cloud">Exercise</span>
+                        <span class="tag-cloud">Chill Day</span>
+                        <br><br>
+
+                        <button type="submit" class="stdBtn">
+                            <i class="fa-solid fa-pen-to-square"></i>Submit
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+
+            <div id="history" class="tabcontent">
+                <h3>History log will go here...</h3>
+            </div>
+
+
+
+            <script>
+                document.getElementById("defaultOpen").click();//defualt tabe value
+
+                function changeTab(evt, tabName) {//if user changes tab using buttons
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(tabName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+            </script>
+
+        </div>
+
+</body>
+
+</html>

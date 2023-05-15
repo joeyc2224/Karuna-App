@@ -13,44 +13,46 @@
         <div class="main profile">
 
             <img class="profile-image" <% if (!user.profilePic) { %> src="images/user.png" <% } else { %> src= "<%=
-            user.profilePic %>" <% } %> >
+                    user.profilePic %>" <% } %> >
 
-            <h2>
-                <%= user.username %>
-            </h2>
+                        <h2>
+                            <%= user.username %>
+                        </h2>
 
-            <p>
-                <%= user.bio %>
-            </p>
+                        <p>
+                            <%= user.bio %>
+                        </p>
 
-            <form action='/follow' method='post'>
-                <input type='hidden' value='<%= user.username %>' name='name' />
-                <input type='submit' value="Follow" />
-            </form>
+                        <form action='/follow' method='post'>
+                            <input type='hidden' value='<%= user.username %>' name='name' />
+                            <button type="submit" class="stdBtn">
+                                <i class="fa-solid fa-plus"></i>Follow
+                            </button>
+                        </form>
 
-            <div class="stats">
+                        <div class="stats">
 
-                <div>
-                    <p class="title">
-                        Followers
-                    </p>
+                            <div>
+                                <p class="title">
+                                    Followers
+                                </p>
 
-                    <p>
-                        <%= user.followers.length %>
-                    </p>
-                </div>
+                                <p>
+                                    <%= user.followers.length %>
+                                </p>
+                            </div>
 
-                <div>
-                    <p class="title">
-                        Following
-                    </p>
+                            <div>
+                                <p class="title">
+                                    Following
+                                </p>
 
-                    <p>
-                        <%= user.following.length %>
-                    </p>
-                </div>
+                                <p>
+                                    <%= user.following.length %>
+                                </p>
+                            </div>
 
-            </div>
+                        </div>
 
         </div>
 

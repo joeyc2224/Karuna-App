@@ -1,0 +1,114 @@
+.post {
+    text-align: center;
+}
+
+.user-link {
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    font-size: 30px;
+}
+
+user-link:focus {
+    outline: none;
+}
+
+.reaction-container{
+    background-color: #1a1a1a;
+    display: flex;
+
+    align-items:center;
+    border-radius: 4px;
+    height: 60px;
+
+}
+
+.reaction{
+    margin: 0;
+    margin-top: -3.5px;
+    margin-left: 10px;
+}
+
+
+.emoji-submit{
+    background-color: #2c2c2c;
+    color: #fff;
+    border: none;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.emoji-submit:hover{
+    background-color: #4b4b4b;
+    cursor: pointer;
+}
+
+
+.custom-select {
+    position: relative;
+    width: 75px;
+    cursor: pointer;
+    margin: auto;
+
+}
+
+.custom-select select {
+    display: none;
+    /*hide original SELECT element: */
+}
+
+.select-selected {
+    background-color: #2c2c2c;
+}
+
+.select-selected:after {
+    position: absolute;
+    content: "";
+    top: 10px;
+    right: 7px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #fff transparent transparent transparent;
+    
+}
+
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 3px;
+}
+
+.select-items div,
+.select-selected {
+    color: #ffffff;
+    padding: 8px 16px;
+    padding-bottom: 14px;
+    border: none;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    outline: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.select-items {
+    position: absolute;
+    background-color: #2c2c2c;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    border-radius: 4px;
+}
+
+.select-hide {
+    display: none;
+}
+
+.select-items div:hover,
+.same-as-selected {
+    background-color: #1a1a1a;
+}

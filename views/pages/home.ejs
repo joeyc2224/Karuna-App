@@ -2,19 +2,144 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Home'}); %>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Home' }); %>
+        <link rel="stylesheet" type="text/css" href="css/home.css">
 </head>
 
 <body>
 
     <%- include('../partials/sidenav'); %>
 
-    <div class="main">
-        <h2>Welcome back</h2>
-        <p>This is the home page made using ejs</p>
-        <p>Go to the post tab to create a new wellbeing post!</p>
+        <div class="main">
 
-    </div>
+            <h2>Latest Posts (with ejs variables)</h2>
+            <hr>
+
+            <button id="postBtn" class="btn btn-post btn-animate"><i class="fa-solid fa-plus fa-fw"
+                    data-title="New Post"></i></button>
+
+
+            <div id="postModal" class="modal">
+
+                <div class="modal-content">
+
+                    <span class="close">&times;</span>
+
+                    <form action="/newpost" enctype="multipart/form-data" method="POST">
+                        <label>How are you feeling?:</label>
+                        <select name="mood" id="mood">
+                            <optgroup label="Well">
+                                <option value="Calm">Calm</option>
+                                <option value="Pleasant">Pleasant</option>
+                                <option value="Confident">Confident</option>
+                                <option value="Supported">Supported</option>
+                            </optgroup>
+                            <optgroup label="Bad">
+                                <option value="Tired">Tired</option>
+                                <option value="Sad">Sad</option>
+                                <option value="Bored">Bored</option>
+                            </optgroup>
+                        </select>
+                        <br><br>
+                        <label>What did you do today?:</label>
+                        <input type="text" id="message" name="message">
+                        <br><br>
+                        <label>Upload an image:</label>
+                        <input type="file" name="myImage" accept="image/*" />
+                        <br><br>
+                        <input type="submit" value="Post">
+                    </form>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <script>
+                //modal script
+                var modal = document.getElementById("postModal");
+
+                var btn = document.getElementById("postBtn");
+
+                var span = document.getElementsByClassName("close")[0];
+
+                btn.onclick = function () {
+                    modal.style.display = "block";
+                }
+
+                span.onclick = function () {
+                    modal.style.display = "none";
+                }
+
+                window.onclick = function (event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+            </script>
+
+            <div id="post-container">
+
+                <% posts.forEach(function(post) { %>
+                    <div class="post">
+
+                        <p class="user">
+
+                        <form action='/viewprofile' method='post'>
+                            <input type='hidden' value='<%= post.postedBy %>' name='name' />
+                            <input class="user-link" type='submit' value="<%= post.postedBy %>" />
+                        </form>
+
+                        </p>
+
+                        <p class="mood">
+                            Currently feeling: <%= post.mood %>
+                        </p>
+
+                        <p class="message">
+                            <%= post.message %>
+                        </p>
+
+                        <img src="<%= post.imagePath %>" width="50%">
+
+                        <p>
+                            <%= post.time %>
+                        </p>
+
+
+                        <button onclick="processLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+                            Likes: <%= post.likes %>
+                        </button>
+
+                        <hr>
+
+                    </div>
+                    <% }); %>
+            </div>
+
+
+            <script>
+                function processLike(postID) {
+                    let options = {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            likedPostID: postID
+                        })
+                    }
+                    fetch('/like', options)
+                        .then(response => response.json())
+                        .then(fetchedData => {
+                            document.getElementById(postID).innerHTML = fetchedData.likeNum
+                        })
+                }
+            </script>
+
+
+        </div>
 
 </body>
 

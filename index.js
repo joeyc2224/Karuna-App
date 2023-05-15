@@ -3,6 +3,7 @@ const mongoDBPassword = process.env.MYMONGODBPASSWORD
 const sessionSecret = process.env.MYSESSIONSECRET
 
 
+
 //express server setup - do node.js in term to run
 const express = require('express')
 const app = express()
@@ -23,6 +24,7 @@ const path = require('path');
 const multer = require('multer');
 
 const upload = multer({ dest: './public/uploads/' })
+
 
 //consts to hold expiry times in ms
 const tensecs = 1000 * 10;
@@ -53,8 +55,11 @@ mongoose.connect("mongodb+srv://joeyc123:" + mongoDBPassword + "@karunadb.onlhva
 //data models import
 const users = require('./models/users')
 const postData = require('./models/posts.js');
+const journalData = require('./models/journals.js');
+
 const { name } = require('ejs');
 const { stringify } = require('querystring');
+const session = require('express-session');
 
 //user check login function
 function checkLoggedIn(request, response, nextAction) {
@@ -68,7 +73,7 @@ function checkLoggedIn(request, response, nextAction) {
     }
 }
 
-//playing with ejs
+//default page return 
 app.get('/', checkLoggedIn, function (request, response) {
     response.render('pages/home', {
         page: "home"//for setting active class on navbar
@@ -86,23 +91,24 @@ app.get('/home', checkLoggedIn, async (request, response) => {
 
 });
 
-app.get('/post', checkLoggedIn, (request, response) => {
-    response.render('pages/post', {
-        page: "post"//for setting active class on navbar
+app.get('/journal', checkLoggedIn, (request, response) => {
+    response.render('pages/journal', {
+        page: "journal"//for setting active class on navbar
     });
 })
 
-//ejs based feed 
+
 app.get('/allies', checkLoggedIn, async (request, response) => {
 
-    var posts = await postData.getPosts()//get posts and store
+    var logs = await journalData.getPosts()//get posts and store
 
     response.render('pages/allies', {
-        posts: posts,//post data sent as variable
+        posts: logs,//post data sent as variable
         page: "feed"//for setting active class on navbar
     });
 
 })
+
 
 app.get('/myprofile', checkLoggedIn, async (request, response) => {
 
@@ -119,12 +125,22 @@ app.post('/editprofile', upload.single('profilePic'), async (request, response) 
 
     let filename = null
 
+    console.log(request.body.username)
+
     if (request.file && request.file.filename) { //check that a file was passes with a valid name
         filename = 'uploads/' + request.file.filename
     }
 
-    await users.editProfile(request.session.userid, request.body, filename)
-    response.redirect('/myprofile')
+    var nameChange = await users.editProfile(request.session.userid, request.body, filename)//var stores bool returned for username change
+
+    if (nameChange === true) {
+        request.session.userid = request.body.username//changes the current user session to new username otherwise profile will not load correctly
+        response.redirect('/myprofile')
+
+    } else {
+        response.redirect('/myprofile')
+    }
+
 })
 
 
@@ -167,21 +183,25 @@ app.get('/logout', async (request, response) => {
     response.redirect('/login')
 })
 
-//controller for login
+
+//bcrypt compatible login
 app.post('/login', async (request, response) => {
 
     let userData = request.body
 
     if (await users.findUser(userData.username)) {
-        if (await users.checkPassword(userData.username, userData.password)) {//if user exists with correct password
-            console.log('User ' + userData.username + " logged in...")
-            request.session.userid = userData.username
-            await users.setLoggedIn(userData.username, true)
-            response.redirect('/home')
-        } else {
-            console.log('password wrong')
-            response.redirect('/loginfailed')
-        }
+        console.log('User ' + userData.username + " logged in...")
+        await users.checkPassword(userData.username, userData.password, async function (isMatch) {//if user exists with correct password
+            if (isMatch) {
+                console.log('password matches')
+                request.session.userid = userData.username
+                await users.setLoggedIn(userData.username, true)
+                response.redirect('/home')
+            } else {
+                console.log('password wrong')
+                response.redirect('/loginfailed')
+            }
+        })
     } else {
         console.log('no such user')
         response.redirect('/loginfailed')
@@ -201,12 +221,19 @@ app.post('/register', async (request, response) => {
         await users.setLoggedIn(userData.username, true)//then logs them in
         response.redirect('/home')
     }
-    console.log(users.getUsers())
+    //console.log(users.getUsers())
 })
 
 
 
-//post functions
+//journal checkin function
+app.post('/newcheckin', async (request, response) => {
+
+    await journalData.addNewPost(request.session.userid, request.body)
+    response.redirect('/allies')
+
+})
+
 app.post('/newpost', upload.single('myImage'), async (request, response) => {
 
     let filename = null
@@ -215,7 +242,7 @@ app.post('/newpost', upload.single('myImage'), async (request, response) => {
     }
 
     await postData.addNewPost(request.session.userid, request.body, filename)
-    response.redirect('/allies')
+    response.redirect('/home')
 })
 
 app.post('/like', async (request, response) => {
@@ -223,12 +250,6 @@ app.post('/like', async (request, response) => {
     likedPostID = request.body.likedPostID
 
     await postData.likePost(likedPostID, request.session.userid)
-
-    //stuff that provides new like value but not working without refreshing whole page yet
-    // var likes = await postData.refreshLikes(likedPostID)
-    // console.log(likes)
-
-    //response.redirect('/feed')
 
     response.json(
         { likeNum: await postData.refreshLikes(likedPostID) }
@@ -239,6 +260,19 @@ app.post('/follow', async (request, response) => {
     await users.followUser(request.body.name, request.session.userid)
     response.redirect('/home')
 })
+
+
+app.post('/reaction', async (request, response) => {
+
+    console.log(request.body)
+
+    likedPostID = request.body.postID
+    emoji = request.body.emoji
+
+    await journalData.reactJournal(likedPostID, emoji, request.session.userid)
+    response.redirect('/allies')
+})
+
 
 
 
