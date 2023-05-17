@@ -107,20 +107,42 @@
                             <%= post.time %>
                         </p>
 
+                        <% let liked=false %>
 
-                        <button onclick="processLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
-                            Likes: <%= post.likes %>
-                        </button>
+                            <% for (var i=0; i < post.likedBy.length; i++) { %>
 
-                        <hr>
+                                <% if (post.likedBy[i].username===currentUser) { console.log(post.likedBy[i].username)
+                                    liked=true; console.log(liked); break; }} %>
+
+                                    <% if(liked==true) { %>
+
+                                        <button class="stdBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %>
+                                            class="like-btn">
+                                            <i class="fa-solid fa-heart"></i>
+                                            <%= post.likes %>
+                                        </button>
+
+                                        <%} else {%>
+
+                                            <button class="stdBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id %>
+                                                class="like-btn">
+                                                <i class="fa-regular fa-heart"></i>
+                                                <%= post.likes %>
+                                            </button>
+
+                                            <% }%>
+
+                                                <hr>
 
                     </div>
+
                     <% }); %>
             </div>
 
 
             <script>
-                function processLike(postID) {
+
+                function addLike(postID) {
                     let options = {
                         method: 'POST',
                         headers: {
@@ -133,9 +155,29 @@
                     fetch('/like', options)
                         .then(response => response.json())
                         .then(fetchedData => {
-                            document.getElementById(postID).innerHTML = fetchedData.likeNum
+                            document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
+                            document.getElementById(postID).onclick = function () { removeLike(postID) };
                         })
                 }
+
+                function removeLike(postID) {
+                    let options = {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            likedPostID: postID
+                        })
+                    }
+                    fetch('/unlike', options)
+                        .then(response => response.json())
+                        .then(fetchedData => {
+                            document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' + fetchedData.likeNum
+                            document.getElementById(postID).onclick = function () { addLike(postID) };
+                        })
+                }
+
             </script>
 
 

@@ -61,7 +61,7 @@ user-link:focus {
   display: inline-block;
   border-radius: 50%;
   transition: all .2s;
-  position: absolute;
+  position: fixed;
   bottom: 27px;
   right: 30px;
   text-align: center;
@@ -118,6 +118,7 @@ user-link:focus {
   transition: all 0.1s ease 0.1s;
   visibility: visible;
 }
+
 [data-title]:after {
   content: attr(data-title);
   position: absolute;
@@ -138,6 +139,3 @@ user-link:focus {
 [data-title] {
   position: relative;
 }
-
-
-

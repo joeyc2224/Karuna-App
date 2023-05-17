@@ -78,6 +78,10 @@ button {
     margin-right: 10px;
 }
 
+.stdBtn .fa-regular {
+    margin-right: 10px;
+}
+
 .stdBtn:hover,
 .stdBtn:focus {
     opacity: .80;

@@ -42,27 +42,27 @@
                             <%= post.message %>
                         </p>
 
-                        <% 
-                        let now=Date.now()
-                        let ellapsed=new Date(now-post.time) 
-                        let ellapsedMins=ellapsed.getMinutes()
-                        let ellapsedHours=ellapsed.getHours() - 1 
-                        %>
+                        <% let now=Date.now(); 
+                        let ellapsed=new Date(now-post.time); 
+                        let ellapsedMins=ellapsed.getMinutes(); 
+                        let ellapsedHours=ellapsed.getHours() - 1; 
+                        let ellapsedDays=ellapsed.getDate() - 1;  %>
 
-                        <p class="time">
-                            <%= ellapsedHours + "hrs "+ ellapsedMins %>mins ago
-                        </p>
-
-                        
+                            <p class="time">
+                                <%= ellapsedDays + "days " + ellapsedHours + "hrs " + ellapsedMins %>mins ago
+                            </p>
 
 
-                        
+
+
+
 
                             <div class="reaction-container">
 
-                                <form action="/reaction" method="POST" style="display: flex; align-items:center;" id="emojiForm">
-                                    <div class="custom-select" >
-                                        <select name="emoji" >
+                                <form action="/reaction" method="POST" style="display: flex; align-items:center;"
+                                    id="emojiForm">
+                                    <div class="custom-select">
+                                        <select name="emoji">
                                             <option>➕</option>
                                             <option>👏</option>
                                             <option>😜</option>
@@ -74,9 +74,9 @@
                                             <option>❤️</option>
                                         </select>
                                     </div>
-    
+
                                     <input type='hidden' value='<%=post._id %>' name='postID' />
-    
+
                                     <button type="submit" class="emoji-submit" id="submitBtn">
                                         <i class="fa-solid fa-share"></i>
                                     </button>
@@ -87,7 +87,7 @@
                                         <p class="reaction" title="<%= reaction.username %>">
                                             <%= reaction.reaction %>
                                         </p>
-                                    <% }); %>
+                                        <% }); %>
                                 </div>
 
                             </div>

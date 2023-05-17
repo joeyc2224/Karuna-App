@@ -86,6 +86,7 @@ app.get('/home', checkLoggedIn, async (request, response) => {
 
     response.render('pages/home', {
         posts: posts,//post data sent as variable
+        currentUser: request.session.userid,
         page: "home"//for setting active class on navbar
     });
 
@@ -250,6 +251,17 @@ app.post('/like', async (request, response) => {
     likedPostID = request.body.likedPostID
 
     await postData.likePost(likedPostID, request.session.userid)
+
+    response.json(
+        { likeNum: await postData.refreshLikes(likedPostID) }
+    )
+})
+
+app.post('/unlike', async (request, response) => {
+
+    likedPostID = request.body.likedPostID
+
+    await postData.unlikePost(likedPostID, request.session.userid)
 
     response.json(
         { likeNum: await postData.refreshLikes(likedPostID) }

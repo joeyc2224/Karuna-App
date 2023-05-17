@@ -64,6 +64,17 @@ async function likePost(likedPostID, likedByID) {
     await Posts.findByIdAndUpdate(likedPostID, { $push: { likedBy: newLike } }).exec()
 }
 
+async function unlikePost(likedPostID, likedByID) {
+
+    await Posts.findByIdAndUpdate(likedPostID, { $inc: { likes: -1 } })
+
+    let liker = {
+        username: likedByID
+    }
+
+    await Posts.findByIdAndUpdate(likedPostID, { $pull: { likedBy: liker } }).exec()
+}
+
 async function refreshLikes(likedPostID) {
 
     await Posts.findById(likedPostID)
@@ -74,4 +85,4 @@ async function refreshLikes(likedPostID) {
     return likes;
 }
 
-module.exports = { addNewPost, getPosts, likePost, refreshLikes }
+module.exports = { addNewPost, getPosts, likePost, refreshLikes, unlikePost }
