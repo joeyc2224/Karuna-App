@@ -79,60 +79,68 @@
                 }
             </script>
 
+            <!-- generate a div for each element in posts data -->
             <div id="post-container">
 
                 <% posts.forEach(function(post) { %>
                     <div class="post">
 
-                        <p class="user">
+                        <% if (post.postedBy===currentUser) { %>
 
-                        <form action='/viewprofile' method='post'>
-                            <input type='hidden' value='<%= post.postedBy %>' name='name' />
-                            <input class="user-link" type='submit' value="<%= post.postedBy %>" />
-                        </form>
+                            <a href="/myprofile">
+                                <%= post.postedBy %>
+                            </a>
 
-                        </p>
+                            <%} else {%>
 
-                        <p class="mood">
-                            Currently feeling: <%= post.mood %>
-                        </p>
+                                <a href="/users/<%= post.postedBy %>">
+                                    <%= post.postedBy %>
+                                </a>
 
-                        <p class="message">
-                            <%= post.message %>
-                        </p>
+                                <% };%>
 
-                        <img src="<%= post.imagePath %>" width="50%">
 
-                        <p>
-                            <%= post.time %>
-                        </p>
+                                    <p class="mood">
+                                        Currently feeling: <%= post.mood %>
+                                    </p>
 
-                        <% let liked=false %>
+                                    <p class="message">
+                                        <%= post.message %>
+                                    </p>
 
-                            <% for (var i=0; i < post.likedBy.length; i++) { %>
+                                    <img src="<%= post.imagePath %>" width="50%">
 
-                                <% if (post.likedBy[i].username===currentUser) { console.log(post.likedBy[i].username)
-                                    liked=true; console.log(liked); break; }} %>
+                                    <p>
+                                        <%= post.time %>
+                                    </p>
 
-                                    <% if(liked==true) { %>
+                                    <% let liked=false %>
 
-                                        <button class="stdBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %>
-                                            class="like-btn">
-                                            <i class="fa-solid fa-heart"></i>
-                                            <%= post.likes %>
-                                        </button>
+                                        <% for (var i=0; i < post.likedBy.length; i++) { %>
 
-                                        <%} else {%>
+                                            <% if (post.likedBy[i].username===currentUser) { liked=true; break; }} %>
 
-                                            <button class="stdBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id %>
-                                                class="like-btn">
-                                                <i class="fa-regular fa-heart"></i>
-                                                <%= post.likes %>
-                                            </button>
+                                                <% if(liked==true) { %>
 
-                                            <% }%>
+                                                    <button class="stdBtn" onclick="removeLike('<%=post._id %>')"
+                                                        id=<%=post._id %>
+                                                        class="like-btn">
+                                                        <i class="fa-solid fa-heart"></i>
+                                                        <%= post.likes %>
+                                                    </button>
 
-                                                <hr>
+                                                    <%} else {%>
+
+                                                        <button class="stdBtn" onclick="addLike('<%=post._id %>')"
+                                                            id=<%=post._id %>
+                                                            class="like-btn">
+                                                            <i class="fa-regular fa-heart"></i>
+                                                            <%= post.likes %>
+                                                        </button>
+
+                                                        <% }%>
+
+                                                            <hr>
 
                     </div>
 

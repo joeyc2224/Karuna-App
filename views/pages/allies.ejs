@@ -20,19 +20,20 @@
                 <% posts.forEach(function(post) { %>
                     <div class="post">
 
-                        <p class="user">
+                        <% if (post.postedBy===currentUser) { %>
 
-                        <form action='/viewprofile' method='post'>
-                            <input type='hidden' value='<%= post.postedBy %>' name='name' />
-
-                            <input class="user-link" type='submit' value="<%= post.postedBy %>" />
-                            <!-- 
-                            <button type="submit" class="stdBtn">
+                            <a href="/myprofile">
                                 <%= post.postedBy %>
-                            </button> -->
-                        </form>
+                            </a>
 
-                        </p>
+                            <%} else {%>
+
+                                <a href="/users/<%= post.postedBy %>">
+                                    <%= post.postedBy %>
+                                </a>
+
+                                <% };%>
+
 
                         <p class="mood">
                             Currently feeling: <%= post.mood %>
@@ -42,11 +43,9 @@
                             <%= post.message %>
                         </p>
 
-                        <% let now=Date.now(); 
-                        let ellapsed=new Date(now-post.time); 
-                        let ellapsedMins=ellapsed.getMinutes(); 
-                        let ellapsedHours=ellapsed.getHours() - 1; 
-                        let ellapsedDays=ellapsed.getDate() - 1;  %>
+                        <% let now=Date.now(); let ellapsed=new Date(now-post.time); let
+                            ellapsedMins=ellapsed.getMinutes(); let ellapsedHours=ellapsed.getHours() - 1; let
+                            ellapsedDays=ellapsed.getDate() - 1; %>
 
                             <p class="time">
                                 <%= ellapsedDays + "days " + ellapsedHours + "hrs " + ellapsedMins %>mins ago

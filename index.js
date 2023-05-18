@@ -105,6 +105,7 @@ app.get('/allies', checkLoggedIn, async (request, response) => {
 
     response.render('pages/allies', {
         posts: logs,//post data sent as variable
+        currentUser: request.session.userid,
         page: "feed"//for setting active class on navbar
     });
 
@@ -144,17 +145,16 @@ app.post('/editprofile', upload.single('profilePic'), async (request, response) 
 
 })
 
+app.get('/users/:userId', checkLoggedIn, async (request, response) => {
 
-app.post('/viewprofile', checkLoggedIn, async (request, response) => {
-
-    var userData = await users.findUser(request.body.name)//get user data from users.js
+    var userData = await users.findUser(request.params.userId)//get user data from users.js
     //console.log(request.body.name)
 
     response.render('profiles/viewProfile', {
         user: userData, //user data 
-        page: "profile"//for setting active class on navbar
+        currentUser: request.session.userid,
+        page: ""//for setting active class on navbar
     });
-
 })
 
 //user login routes
@@ -270,7 +270,12 @@ app.post('/unlike', async (request, response) => {
 
 app.post('/follow', async (request, response) => {
     await users.followUser(request.body.name, request.session.userid)
-    response.redirect('/home')
+    response.redirect('/users/' + request.body.name)
+})
+
+app.post('/unfollow', async (request, response) => {
+    await users.unfollowUser(request.body.name, request.session.userid)
+    response.redirect('/users/' + request.body.name)
 })
 
 

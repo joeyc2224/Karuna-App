@@ -120,6 +120,19 @@ async function followUser(followee, follower) {
     await Users.findOneAndUpdate({ username: follower }, { $push: { following: newFollowing } }).exec()//add new following
 }
 
+async function unfollowUser(followee, follower) {
+
+    let oldFollower = {
+        username: follower,
+    }
+    let oldFollowing = {
+        username: followee,
+    }
+
+    await Users.findOneAndUpdate({ username: followee }, { $pull: { followers: oldFollower } }).exec()//add new follower
+    await Users.findOneAndUpdate({ username: follower }, { $pull: { following: oldFollowing } }).exec()//add new following
+}
+
 async function editProfile(user, data, imageFile) {
 
     if (imageFile) {//if pp is changed
@@ -151,4 +164,4 @@ async function editProfile(user, data, imageFile) {
     }
 }
 
-module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, editProfile }
+module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, unfollowUser, editProfile }
