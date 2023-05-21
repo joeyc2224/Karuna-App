@@ -2,8 +2,6 @@ require('dotenv').config();
 const mongoDBPassword = process.env.MYMONGODBPASSWORD
 const sessionSecret = process.env.MYSESSIONSECRET
 
-
-
 //express server setup - do node.js in term to run
 const express = require('express')
 const app = express()
@@ -107,6 +105,17 @@ app.get('/allies', checkLoggedIn, async (request, response) => {
         posts: logs,//post data sent as variable
         currentUser: request.session.userid,
         page: "feed"//for setting active class on navbar
+    });
+
+})
+
+app.get('/inbox', checkLoggedIn, async (request, response) => {
+
+    var userData = await users.findUser(request.session.userid)//get user data from users.js
+
+    response.render('pages/inbox', {
+        user: userData, //user data 
+        page: "inbox"//for setting active class on navbar
     });
 
 })
@@ -268,6 +277,7 @@ app.post('/unlike', async (request, response) => {
     )
 })
 
+// follow/unfollow routes from profile page buttons
 app.post('/follow', async (request, response) => {
     await users.followUser(request.body.name, request.session.userid)
     response.redirect('/users/' + request.body.name)
@@ -279,6 +289,38 @@ app.post('/unfollow', async (request, response) => {
 })
 
 
+
+//allies
+app.post('/requestally', async (request, response) => {
+    await users.requestAlly(request.body.name, request.session.userid)
+    response.redirect('/users/' + request.body.name)
+})
+
+app.post('/unrequestally', async (request, response) => {
+    await users.unrequestAlly(request.body.name, request.session.userid)
+    response.redirect('/users/' + request.body.name)
+})
+
+//accept response
+app.post('/acceptally', async (request, response) => {
+    await users.acceptAlly(request.body.name, request.session.userid)
+    response.redirect('/inbox')
+})
+
+//decline response
+app.post('/declineally', async (request, response) => {
+    await users.unrequestAlly(request.session.userid, request.body.name)
+    response.redirect('/inbox')
+})
+
+app.post('/removeally', async (request, response) => {
+    await users.removeAlly(request.session.userid, request.body.name)
+    response.redirect('/home')
+})
+
+
+
+//handles emoji reaction in journal posts
 app.post('/reaction', async (request, response) => {
 
     console.log(request.body)

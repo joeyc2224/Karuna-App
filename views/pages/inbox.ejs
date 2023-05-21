@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head', {pagetitle: 'Karuna | Daily Check In' }); %>
+        <link rel="stylesheet" type="text/css" href="css/inbox.css">
+</head>
+
+<body>
+
+    <%- include('../partials/sidenav'); %>
+
+        <div class="main">
+
+            <h2>Inbox</h2>
+
+
+
+            <div class="tab">
+                <button class="tablinks" onclick="changeTab(event, 'notifications')"><i
+                        class="fa-solid fa-heart fa-fw"></i>Notifications</button>
+                <button class="tablinks" id="defaultOpen" onclick="changeTab(event, 'requests')"><i
+                        class="fa-solid fa-envelope fa-fw"></i> Ally Requests</button>
+            </div>
+
+            <div id="notifications" class="tabcontent">
+
+                <p>New likes etc. will go here</p>
+
+            </div>
+
+
+            <div id="requests" class="tabcontent">
+                <!-- if requests are empty -->
+                <% if (!user.requests.length) { %>
+
+                    <p>No requests</p>
+
+                    <%} else {%>
+
+                        <!-- generate a div for each element in request data -->
+                        <% user.requests.forEach(function(request) { %>
+
+                            <div class="request">
+
+                                <p> <a href="/users/<%= request.username %>">
+                                        <%= request.username %>
+                                    </a>wants to be allies</p>
+
+
+                                <div class="requestBtns">
+
+                                    <form action='/acceptally' method='post'>
+
+                                        <input type='hidden' value='<%= request.username %>' name='name' />
+                                        <button type="submit" class="stdBtn">
+                                            <i class="fa-solid fa-plus"></i>Accept
+                                        </button>
+
+                                    </form>
+
+                                    <form action='/declineally' method='post'>
+
+                                        <input type='hidden' value='<%= request.username %>' name='name' />
+                                        <button type="submit" class="stdBtn" style="background-color: firebrick;">
+                                            <i class="fa-solid fa-plus"></i>Decline
+                                        </button>
+
+                                    </form>
+                                </div>
+
+                                <hr>
+
+                            </div>
+
+                            <% })}; %>
+            </div>
+
+
+            <script>
+                document.getElementById("defaultOpen").click();//defualt tab value
+
+                function changeTab(evt, tabName) {//if user changes tab using buttons
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(tabName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+            </script>
+
+        </div>
+
+</body>
+
+</html>

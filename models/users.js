@@ -11,6 +11,10 @@ const userSchema = new Schema({
     loggedin: Boolean,
     profilePic: String,
     bio: String,
+    requests: [{
+        username: String,
+        time: Date,
+    }],
     allies: [{
         username: String,
     }],
@@ -28,6 +32,7 @@ userSchema.pre('save', function (next) {
 
     // only hash the password if it has been modified (or is new)
     if (!user.isModified('password')) return next();
+
 
     // generate a salt
     bcrypt.genSalt(saltRounds, function (err, salt) {
@@ -107,6 +112,7 @@ async function isLoggedIn(username) {
     return false
 }
 
+//followers functions
 async function followUser(followee, follower) {
 
     let newFollower = {
@@ -129,10 +135,67 @@ async function unfollowUser(followee, follower) {
         username: followee,
     }
 
-    await Users.findOneAndUpdate({ username: followee }, { $pull: { followers: oldFollower } }).exec()//add new follower
-    await Users.findOneAndUpdate({ username: follower }, { $pull: { following: oldFollowing } }).exec()//add new following
+    console.log(oldFollower, oldFollowing)
+
+    await Users.findOneAndUpdate({ username: followee }, { $pull: { followers: oldFollower } }).exec()
+    await Users.findOneAndUpdate({ username: follower }, { $pull: { following: oldFollowing } }).exec()
 }
 
+
+//ally functions
+async function requestAlly(recipient, sender) {
+
+    let newRequest = {
+        username: sender,
+        time: Date.now(),
+    }
+
+    await Users.findOneAndUpdate({ username: recipient }, { $push: { requests: newRequest } }).exec()
+}
+
+async function unrequestAlly(recipient, sender) {
+
+    let oldRequest = {
+        username: sender,
+    }
+    //console.log("remove request")
+    await Users.findOneAndUpdate({ username: recipient }, { $pull: { requests: oldRequest } }).exec()//pulls ally request from user
+}
+
+async function acceptAlly(sender, recipient) {
+
+    let newAlly1 = {
+        username: sender,
+    }
+
+    let newAlly2 = {
+        username: recipient,
+    }
+
+    await Users.findOneAndUpdate({ username: recipient }, { $push: { allies: newAlly1 } }).exec()//add ally
+    await Users.findOneAndUpdate({ username: sender }, { $push: { allies: newAlly2 } }).exec()
+    await Users.findOneAndUpdate({ username: recipient }, { $pull: { requests: newAlly1 } }).exec()//pulls ally request from user
+}
+
+async function removeAlly(ally1, ally2) {
+
+    let currentUser = {
+        username: ally1,
+    }
+
+    let otherUser = {
+        username: ally2,
+    }
+
+    console.log(currentUser, otherUser)
+
+    await Users.findOneAndUpdate({ username: ally1 }, { $pull: { allies: otherUser } }).exec()
+    await Users.findOneAndUpdate({ username: ally2 }, { $pull: { allies: currentUser } }).exec()
+}
+
+
+
+// edit profile function
 async function editProfile(user, data, imageFile) {
 
     if (imageFile) {//if pp is changed
@@ -143,6 +206,13 @@ async function editProfile(user, data, imageFile) {
 
     if (data.bio) {
         await Users.findOneAndUpdate({ username: user }, { bio: data.bio }).exec()
+
+    } else {
+        //console.log("bio null")
+    }
+
+    if (data.password) {
+        await Users.findOneAndUpdate({ username: user }, { password: data.password }).exec()
 
     } else {
         //console.log("bio null")
@@ -164,4 +234,4 @@ async function editProfile(user, data, imageFile) {
     }
 }
 
-module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, unfollowUser, editProfile }
+module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, unfollowUser, editProfile, requestAlly, unrequestAlly, acceptAlly, removeAlly }

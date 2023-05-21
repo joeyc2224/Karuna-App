@@ -39,8 +39,12 @@
                                     <input type="file" name="profilePic" accept="image/*" />
                                     <br><br>
 
-                                    <label>Change Username:</label>
+                                    <label>Edit Username:</label>
                                     <input type="text" name="username" placeholder="<%= user.username %>">
+                                    <br><br>
+
+                                    <label>Change Password:</label>
+                                    <input type="text" name="password" placeholder="password">
                                     <br><br>
 
                                     <label>Edit Bio:</label>
@@ -114,6 +118,23 @@
 
                                     <p>
                                         <%= follower.username %>
+                                    </p>
+
+                                </div>
+
+                                <% }); %>
+
+                        </div>
+
+                        <h2>Allies</h2>
+                        <div class="allies">
+
+                            <% user.allies.forEach(function(ally) { %>
+
+                                <div>
+
+                                    <p>
+                                        <%= ally.username %>
                                     </p>
 
                                 </div>
