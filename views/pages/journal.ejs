@@ -15,9 +15,9 @@
             <h2>Wellbeing Journal</h2>
 
             <div class="tab">
-                <button class="tablinks" id="defaultOpen" onclick="changeTab(event, 'newPost')"><i
+                <button class="tablinks" onclick="changeTab(event, 'newPost')"><i
                         class="fa-solid fa-heart-circle-plus fa-fw"></i>Check In</button>
-                <button class="tablinks" onclick="changeTab(event, 'history')"><i
+                <button class="tablinks" id="defaultOpen" onclick="changeTab(event, 'history')"><i
                         class="fa-solid fa-clock-rotate-left fa-fw"></i>History</button>
             </div>
 
@@ -28,13 +28,12 @@
                         <label>How are you feeling?</label>
                         <select name="mood" id="mood">
                             <option value="" disabled selected>Select Mood</option>
-                            <option value="Calm">&#129409;Amazing</option>
-                            <option value="Pleasant">Good</option>
-                            <option value="Confident">Meh</option>
-                            <option value="Supported">Supported</option>
-                            <option value="Tired">Tired</option>
-                            <option value="Sad">Sad</option>
-                            <option value="Bored">Bored</option>
+                            <!-- Use numbers for mood value so can be used in journal chart-->
+                            <option value="5">&#128512;Great</option>
+                            <option value="4">&#128578;Good</option>
+                            <option value="3">&#128529;Ok</option>
+                            <option value="2">&#128530;Bad</option>
+                            <option value="1">&#128565;Awful</option>
                         </select>
                         <br><br>
 
@@ -42,11 +41,11 @@
                         <textarea name="message" id="message"></textarea>
                         <br><br>
 
-                        <label>Tags (placeholder):</label>
+                        <!-- <label>Tags (placeholder):</label>
                         <span class="tag-cloud">Good Sleep</span>
                         <span class="tag-cloud">Exercise</span>
                         <span class="tag-cloud">Chill Day</span>
-                        <br><br>
+                        <br><br> -->
 
                         <button type="submit" class="stdBtn">
                             <i class="fa-solid fa-pen-to-square"></i>Submit
@@ -58,7 +57,9 @@
 
 
             <div id="history" class="tabcontent">
-                <h3>History log will go here...</h3>
+                <div style="width: 100%;"><canvas id="journalGraph"></canvas></div>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script type="module" src="scripts/journalGraph.js"></script>
             </div>
 
 

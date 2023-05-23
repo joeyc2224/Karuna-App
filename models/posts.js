@@ -42,7 +42,7 @@ async function getPosts(n = 20) {
     let data = []
     await Posts.find({})
         .sort({ 'time': -1 })
-        .limit(n)
+        //.limit(n)
         .exec()
         .then(mongoData => {
             data = mongoData;

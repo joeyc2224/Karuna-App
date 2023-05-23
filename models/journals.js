@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const journalSchema = new Schema({
     postedBy: String,
-    mood: String,
+    mood: Number,
     message: String,
     time: Date,
     reactions: [{
@@ -12,28 +12,28 @@ const journalSchema = new Schema({
     }]
 })
 
-const Posts = model('Journal', journalSchema);
+const Journal = model('Journal', journalSchema);
 
-function addNewPost(userID, post) {
-    let myPost = {
+function addNewLog(userID, log) {
+    let myJournalLog = {
         postedBy: userID,
-        mood: post.mood,
-        message: post.message,
+        mood: log.mood,
+        message: log.message,
         time: Date.now(),
     }
     //create new collection data in mongo
-    Posts.create(myPost)
+    Journal.create(myJournalLog)
         .catch(err => {
             console.log("Error: " + err)
         })
 }
 
 //return posts
-async function getPosts(n = 20) {
+async function getJournals(n = 20) {
     let data = []
-    await Posts.find({})
+    await Journal.find({})
         .sort({ 'time': -1 })
-        .limit(n)
+        //.limit(n)
         .exec()
         .then(mongoData => {
             data = mongoData;
@@ -44,24 +44,47 @@ async function getPosts(n = 20) {
     return data;
 }
 
-async function reactJournal(likedPostID, emoji, likedByID) {
+
+async function getAlliesJournals(allies) {
+    let data = []
+    console.log(allies)
+    await Journal.find({ postedBy: allies })
+        .sort({ 'time': -1 })
+        .exec()
+        .then(mongoData => {
+            data = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+    return data;
+}
+
+
+//return user posts
+async function getUserJournals(user, n = 20) {
+    let data = []
+    await Journal.find({ postedBy: user })//find journal data with just current username as poster
+        .sort({ 'time': -1 })
+        //.limit(n)
+        .exec()
+        .then(mongoData => {
+            data = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+    return data;
+}
+
+async function reactJournal(journalID, emoji, reactByID) {
 
     let newReact = {
-        username: likedByID,
+        username: reactByID,
         reaction: emoji
     }
 
-    await Posts.findByIdAndUpdate(likedPostID, { $push: { reactions: newReact } }).exec()
+    await Journal.findByIdAndUpdate(journalID, { $push: { reactions: newReact } }).exec()
 }
 
-async function refreshLikes(likedPostID) {
-
-    await Posts.findById(likedPostID)
-        .then(mongoData => {
-            likes = mongoData.likes;
-        })
-
-    return likes;
-}
-
-module.exports = { addNewPost, getPosts, reactJournal, refreshLikes }
+module.exports = { addNewLog, getJournals, reactJournal, getUserJournals, getAlliesJournals }

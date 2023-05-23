@@ -91,15 +91,27 @@ app.get('/home', checkLoggedIn, async (request, response) => {
 });
 
 app.get('/journal', checkLoggedIn, (request, response) => {
+
     response.render('pages/journal', {
         page: "journal"//for setting active class on navbar
     });
 })
 
 
+//SHOW JOURNAL LOGS FROM ALLIES
 app.get('/allies', checkLoggedIn, async (request, response) => {
 
-    var logs = await journalData.getPosts()//get posts and store
+    var userData = await users.findUser(request.session.userid)//get user data from users.js
+
+    let allies = []
+
+    userData.allies.forEach(function (ally) {
+        allies.push(ally.username)
+    })
+
+    allies.push(request.session.userid)//add current user to list so their posts appear too
+
+    var logs = await journalData.getAlliesJournals(allies)//get posts and store
 
     response.render('pages/allies', {
         posts: logs,//post data sent as variable
@@ -154,6 +166,8 @@ app.post('/editprofile', upload.single('profilePic'), async (request, response) 
 
 })
 
+
+//VIEW OTHER USER PROFILE
 app.get('/users/:userId', checkLoggedIn, async (request, response) => {
 
     var userData = await users.findUser(request.params.userId)//get user data from users.js
@@ -236,14 +250,16 @@ app.post('/register', async (request, response) => {
 
 
 
-//journal checkin function
+//NEW JOURNAL CHECK IN
 app.post('/newcheckin', async (request, response) => {
 
-    await journalData.addNewPost(request.session.userid, request.body)
+    await journalData.addNewLog(request.session.userid, request.body)
     response.redirect('/allies')
 
 })
 
+
+//NEW STANDARD
 app.post('/newpost', upload.single('myImage'), async (request, response) => {
 
     let filename = null
@@ -255,6 +271,10 @@ app.post('/newpost', upload.single('myImage'), async (request, response) => {
     response.redirect('/home')
 })
 
+
+
+
+//LIKING/UNLIKE ROUTES
 app.post('/like', async (request, response) => {
 
     likedPostID = request.body.likedPostID
@@ -276,6 +296,21 @@ app.post('/unlike', async (request, response) => {
         { likeNum: await postData.refreshLikes(likedPostID) }
     )
 })
+
+
+//handles emoji reaction in journal posts
+app.post('/reaction', async (request, response) => {
+
+    console.log(request.body)
+
+    reactPostID = request.body.postID
+    emoji = request.body.emoji
+
+    await journalData.reactJournal(reactPostID, emoji, request.session.userid)
+    response.redirect('/allies')
+})
+
+
 
 // follow/unfollow routes from profile page buttons
 app.post('/follow', async (request, response) => {
@@ -319,18 +354,16 @@ app.post('/removeally', async (request, response) => {
 })
 
 
-
-//handles emoji reaction in journal posts
-app.post('/reaction', async (request, response) => {
-
-    console.log(request.body)
-
-    likedPostID = request.body.postID
-    emoji = request.body.emoji
-
-    await journalData.reactJournal(likedPostID, emoji, request.session.userid)
-    response.redirect('/allies')
+//get mood data for journal graph
+app.get('/getmooddata', async (request, response) => {
+    response.json(
+        { logs: await journalData.getUserJournals(request.session.userid) }//get just current user's check in data
+    )
 })
+
+
+
+
 
 
 

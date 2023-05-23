@@ -112,7 +112,7 @@ async function isLoggedIn(username) {
     return false
 }
 
-//followers functions
+//FOLLOWER FUNCTIONS
 async function followUser(followee, follower) {
 
     let newFollower = {
@@ -135,14 +135,15 @@ async function unfollowUser(followee, follower) {
         username: followee,
     }
 
-    console.log(oldFollower, oldFollowing)
+    //console.log(oldFollower, oldFollowing)
 
     await Users.findOneAndUpdate({ username: followee }, { $pull: { followers: oldFollower } }).exec()
     await Users.findOneAndUpdate({ username: follower }, { $pull: { following: oldFollowing } }).exec()
 }
 
 
-//ally functions
+
+//ALLY FUNCTIONS
 async function requestAlly(recipient, sender) {
 
     let newRequest = {
@@ -162,7 +163,7 @@ async function unrequestAlly(recipient, sender) {
     await Users.findOneAndUpdate({ username: recipient }, { $pull: { requests: oldRequest } }).exec()//pulls ally request from user
 }
 
-async function acceptAlly(sender, recipient) {
+async function acceptAlly(sender, recipient) {//accept ally request, removing the request and adding each username to both parties
 
     let newAlly1 = {
         username: sender,
@@ -195,16 +196,17 @@ async function removeAlly(ally1, ally2) {
 
 
 
-// edit profile function
+
+//EDIT PROFILE
 async function editProfile(user, data, imageFile) {
 
-    if (imageFile) {//if pp is changed
+    if (imageFile) {//if pic is changed
         await Users.findOneAndUpdate({ username: user }, { profilePic: imageFile }).exec()
     } else {
         //console.log("pic null")
     }
 
-    if (data.bio) {
+    if (data.bio) {//only chnage if data is entered
         await Users.findOneAndUpdate({ username: user }, { bio: data.bio }).exec()
 
     } else {
