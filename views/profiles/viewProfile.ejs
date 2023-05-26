@@ -91,7 +91,6 @@
 
       <form action='/unrequestally' method='post'>
         <input type='hidden' value='<%= user.username %>' name='name' />
-        <input type='hidden' value='<%= user._id %>' name='id' />
         <button type="submit" class="stdBtn" style="background-color: firebrick;">
           <i class="fa-solid fa-minus fa-fw"></i>Remove
           Request
@@ -102,7 +101,6 @@
 
       <form action='/requestally' method='post'>
         <input type='hidden' value='<%= user.username %>' name='name' />
-        <input type='hidden' value='<%= user._id %>' name='id' />
         <button type="submit" class="stdBtn">
           <i class="fa-solid fa-user-plus fa-fw"></i>Request
           Ally

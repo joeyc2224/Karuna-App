@@ -452,10 +452,10 @@ app.post('/register', async (request, response) => {
         console.log('user exists')
         response.redirect('/signupfailed')
     } else {
-        users.newUser(userData.username, userData.password)//adds user to db
+        await users.newUser(userData.username, userData.password)//adds user to db
         request.session.userid = userData.username
-        request.session.userObjId = await users.getUser_id(userData.username)
         await users.setLoggedIn(userData.username, true)//then logs them in
+        request.session.userObjId = await users.getUser_id(userData.username)
         response.redirect('/home/trending')
     }
     //console.log(users.getUsers())

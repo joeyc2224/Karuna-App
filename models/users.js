@@ -5,7 +5,6 @@ const { Schema, model } = mongoose;
 const bcrypt = require('bcrypt');
 const { changePostUser } = require('./posts');
 const { changeJournalUser } = require('./journals');
-const saltRounds = 10
 
 const userSchema = new Schema({
     username: String,
@@ -29,27 +28,25 @@ const userSchema = new Schema({
 });
 
 //create salt and hash when a password is changed
-userSchema.pre('save', function (next) {
-    let user = this;
+userSchema.pre("save", async function (next) {
 
-    // only hash the password if it has been modified (or is new)
-    if (!user.isModified('password')) return next();
+    if ((this.isModified && this.isModified("password"))) {
+        this.password = await bcrypt.hash(this.password, 12);
+    }
+    next()
 
-
-    // generate a salt
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-        if (err) return next(err);
-
-        // hash the password using our new salt
-        bcrypt.hash(user.password, salt, function (err, hash) {
-            if (err) return next(err);
-
-            // override the cleartext password with the hashed one
-            user.password = hash;
-            next();
-        });
-    });
 });
+
+userSchema.pre(["updateOne", "findByIdAndUpdate", "findOneAndUpdate"], async function (next) {
+
+    const data = this.getUpdate();
+    if (data.password) {
+        data.password = await bcrypt.hash(data.password, 12);
+    }
+    next()
+
+});
+
 
 const Users = model('Users', userSchema);//users collection in Karuna database
 
@@ -272,12 +269,49 @@ async function editProfile(user, data, imageFile) {
         }
         else {
 
-            // userData = await findUser(user)
+            userData = await findUser(user)
 
-            // for (const ally of userData.allies) {
-            //     await Users.findOneAndUpdate({ username: ally.username }, { $pull: { allies: user } }).exec()
-            //     await Users.findOneAndUpdate({ username: ally.username }, { $push: { allies: data.username } }).exec()
-            // }
+            for (const ally of userData.allies) {//update allies names
+
+                let oldUsername = {
+                    username: user,
+                }
+
+                let newUsername = {
+                    username: data.username,
+                }
+
+                await Users.findOneAndUpdate({ username: ally.username }, { $pull: { allies: oldUsername } }).exec()
+                await Users.findOneAndUpdate({ username: ally.username }, { $push: { allies: newUsername } }).exec()
+            }
+
+            for (const follower of userData.followers) {//update followers name
+
+                let oldUsername = {
+                    username: user,
+                }
+
+                let newUsername = {
+                    username: data.username,
+                }
+
+                await Users.findOneAndUpdate({ username: follower.username }, { $pull: { following: oldUsername } }).exec()
+                await Users.findOneAndUpdate({ username: follower.username }, { $push: { following: newUsername } }).exec()
+            }
+
+            for (const following of userData.following) {//update following name
+
+                let oldUsername = {
+                    username: user,
+                }
+
+                let newUsername = {
+                    username: data.username,
+                }
+
+                await Users.findOneAndUpdate({ username: following.username }, { $pull: { followers: oldUsername } }).exec()
+                await Users.findOneAndUpdate({ username: following.username }, { $push: { followers: newUsername } }).exec()
+            }
 
             await changePostUser(user, data.username)//changes the username attached to all posts made by user to avoid errors
             await changeJournalUser(user, data.username)//changes the username attached to all posts made by user to avoid errors
