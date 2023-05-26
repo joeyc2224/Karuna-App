@@ -2,194 +2,229 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Home' }); %>
-        <link rel="stylesheet" type="text/css" href="css/home.css">
+  <%- include('../partials/head', {pagetitle: 'Karuna | Home' }); %>
+  <link rel="stylesheet" type="text/css" href="/css/home.css">
 </head>
 
 <body>
 
-    <%- include('../partials/sidenav'); %>
+  <%- include('../partials/sidenav'); %>
 
-        <div class="main">
+  <div class="main">
 
-            <h2>Latest Posts (with ejs variables)</h2>
-            <hr>
+    <%- include('../partials/feedBtns'); %>
 
-            <button id="postBtn" class="btn btn-post btn-animate"><i class="fa-solid fa-plus fa-fw"
-                    data-title="New Post"></i></button>
-
-
-            <div id="postModal" class="modal">
-
-                <div class="modal-content">
-
-                    <span class="close">&times;</span>
-
-                    <form action="/newpost" enctype="multipart/form-data" method="POST">
-                        <label>How are you feeling?:</label>
-                        <select name="mood" id="mood">
-                            <optgroup label="Well">
-                                <option value="Calm">Calm</option>
-                                <option value="Pleasant">Pleasant</option>
-                                <option value="Confident">Confident</option>
-                                <option value="Supported">Supported</option>
-                            </optgroup>
-                            <optgroup label="Bad">
-                                <option value="Tired">Tired</option>
-                                <option value="Sad">Sad</option>
-                                <option value="Bored">Bored</option>
-                            </optgroup>
-                        </select>
-                        <br><br>
-                        <label>What did you do today?:</label>
-                        <input type="text" id="message" name="message">
-                        <br><br>
-                        <label>Upload an image:</label>
-                        <input type="file" name="myImage" accept="image/*" />
-                        <br><br>
-                        <input type="submit" value="Post">
-                    </form>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-            <script>
-                //modal script
-                var modal = document.getElementById("postModal");
-
-                var btn = document.getElementById("postBtn");
-
-                var span = document.getElementsByClassName("close")[0];
-
-                btn.onclick = function () {
-                    modal.style.display = "block";
-                }
-
-                span.onclick = function () {
-                    modal.style.display = "none";
-                }
-
-                window.onclick = function (event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-            </script>
-
-            <!-- generate a div for each element in posts data -->
-            <div id="post-container">
-
-                <% posts.forEach(function(post) { %>
-                    <div class="post">
-
-                        <% if (post.postedBy===currentUser) { %>
-
-                            <a href="/myprofile">
-                                <%= post.postedBy %>
-                            </a>
-
-                            <%} else {%>
-
-                                <a href="/users/<%= post.postedBy %>">
-                                    <%= post.postedBy %>
-                                </a>
-
-                                <% };%>
+    <br>
+    <br>
 
 
-                                    <p class="mood">
-                                        Currently feeling: <%= post.mood %>
-                                    </p>
+    <!-- generate a div for each element in posts data -->
+    <div class="post-container">
 
-                                    <p class="message">
-                                        <%= post.message %>
-                                    </p>
+      <% let index=0; %>
+      <!-- for iterating profile pic list -->
 
-                                    <img src="<%= post.imagePath %>" width="50%">
+      <% posts.forEach(function(post) { %>
 
-                                    <p>
-                                        <%= post.time %>
-                                    </p>
-
-                                    <% let liked=false %>
-
-                                        <% for (var i=0; i < post.likedBy.length; i++) { %>
-
-                                            <% if (post.likedBy[i].username===currentUser) { liked=true; break; }} %>
-
-                                                <% if(liked==true) { %>
-
-                                                    <button class="stdBtn" onclick="removeLike('<%=post._id %>')"
-                                                        id=<%=post._id %>
-                                                        class="like-btn">
-                                                        <i class="fa-solid fa-heart"></i>
-                                                        <%= post.likes %>
-                                                    </button>
-
-                                                    <%} else {%>
-
-                                                        <button class="stdBtn" onclick="addLike('<%=post._id %>')"
-                                                            id=<%=post._id %>
-                                                            class="like-btn">
-                                                            <i class="fa-regular fa-heart"></i>
-                                                            <%= post.likes %>
-                                                        </button>
-
-                                                        <% }%>
-
-                                                            <hr>
-
-                    </div>
-
-                    <% }); %>
-            </div>
+      <div class="post">
 
 
-            <script>
+        <div class="info">
 
-                function addLike(postID) {
-                    let options = {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            likedPostID: postID
-                        })
-                    }
-                    fetch('/like', options)
-                        .then(response => response.json())
-                        .then(fetchedData => {
-                            document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
-                            document.getElementById(postID).onclick = function () { removeLike(postID) };
-                        })
-                }
+          <div class="user">
 
-                function removeLike(postID) {
-                    let options = {
-                        method: 'POST',
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            likedPostID: postID
-                        })
-                    }
-                    fetch('/unlike', options)
-                        .then(response => response.json())
-                        .then(fetchedData => {
-                            document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' + fetchedData.likeNum
-                            document.getElementById(postID).onclick = function () { addLike(postID) };
-                        })
-                }
+            <img class="profile-image" src="../<%=profilePics[index]%>">
 
-            </script>
+            <% if (post.postedBy===currentUser) { %>
 
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
+
+            <%} else {%>
+
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
+
+            <% };%>
+
+          </div>
+
+
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
+
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+                                                    if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+                                                    if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
+
+          <p class="time">
+            <%= displayTime %>
+          </p>
 
         </div>
+
+        <% if (post.imagePath) { %>
+        <img class="post-image" src="/<%= post.imagePath %>">
+        <%}%>
+
+                                        <p class="message">
+                                            <%= post.message %>
+        </p>
+
+
+        <div class="action-buttons">
+
+          <% let liked=false %>
+
+          <% for (var i=0; i < post.likedBy.length; i++) { %>
+
+          <% if (post.likedBy[i].username===currentUser) { liked=true; break;
+                                                        }} %>
+
+          <% if(liked==true) { %>
+
+          <button class="actionBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+            <i class="fa-solid fa-heart"></i>
+            <%= post.likes %>
+          </button>
+
+          <%} else {%>
+
+          <button class="actionBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id%>>
+            <i class="fa-regular fa-heart fa-fw"></i>
+            <%= post.likes %>
+          </button>
+
+          <% }%>
+
+
+          <button class="actionBtn">
+            <a href="/post/<%=post._id %>">
+              <i class="fa-solid fa-comment fa-fw"></i>
+              <%= post.comments.length %>
+            </a>
+          </button>
+
+          <% if (post.postedBy===currentUser) { %>
+
+          <button class="actionBtn" id=<%=post._id %>>
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+          </button>
+          <% }%>
+
+        </div>
+
+
+
+
+
+      </div>
+
+      <% index++ %>
+
+      <% }); %>
+    </div>
+
+  </div>
+
+  <script>
+    //LIKE POST SCRIPT
+    function addLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/like', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            removeLike(postID)
+          };
+        })
+    }
+
+    function removeLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/unlike', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' +
+            fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            addLike(postID)
+          };
+        })
+    }
+  </script>
+
+
+
+  <!-- POST BUTTON AND MODAL -->
+  <button id="postBtn" class="btn btn-post btn-animate"><i class="fa-solid fa-plus fa-fw" data-title="New Post"></i></button>
+
+
+  <div id="postModal" class="modal">
+
+    <div class="modal-content">
+
+      <span class="close">&times;</span>
+
+      <form action="/newpost" enctype="multipart/form-data" method="POST">
+        <label>Caption:</label>
+        <input type="text" id="message" name="message">
+        <br><br>
+        <label>Upload an image:</label>
+        <input type="file" name="myImage" accept="image/*" />
+        <br><br>
+        <input type="submit" value="Post">
+      </form>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script>
+    //modal script
+    var modal = document.getElementById("postModal");
+
+    var btn = document.getElementById("postBtn");
+
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
 
 </body>
 

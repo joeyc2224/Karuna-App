@@ -47,7 +47,7 @@ async function getJournals(n = 20) {
 
 async function getAlliesJournals(allies) {
     let data = []
-    console.log(allies)
+    //console.log(allies)
     await Journal.find({ postedBy: allies })
         .sort({ 'time': -1 })
         .exec()
@@ -87,4 +87,10 @@ async function reactJournal(journalID, emoji, reactByID) {
     await Journal.findByIdAndUpdate(journalID, { $push: { reactions: newReact } }).exec()
 }
 
-module.exports = { addNewLog, getJournals, reactJournal, getUserJournals, getAlliesJournals }
+async function changeJournalUser(currentName, newName) {
+
+    await Journal.updateMany({ postedBy: currentName }, { postedBy: newName }).exec()//finds all older usernames and changes them to the new one
+
+}
+
+module.exports = { addNewLog, getJournals, reactJournal, getUserJournals, getAlliesJournals, changeJournalUser }

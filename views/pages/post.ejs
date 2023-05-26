@@ -2,46 +2,220 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Daily Check In' }); %>
+  <%- include('../partials/head', {pagetitle: 'Karuna | Home' }); %>
+  <link rel="stylesheet" type="text/css" href="/css/home.css">
+  <link rel="stylesheet" type="text/css" href="/css/post.css">
+
 </head>
 
 <body>
 
-    <%- include('../partials/sidenav'); %>
+  <%- include('../partials/sidenav'); %>
 
-        <div class="main">
+  <div class="main">
 
-            <h2>Daily Check In</h2>
 
-            <div>
-                <form action="/newpost" enctype="multipart/form-data" method="POST">
-                    <label>How are you feeling?:</label>
-                    <select name="mood" id="mood">
-                        <optgroup label="Well">
-                            <option value="Calm">Calm</option>
-                            <option value="Pleasant">Pleasant</option>
-                            <option value="Confident">Confident</option>
-                            <option value="Supported">Supported</option>
-                        </optgroup>
-                        <optgroup label="Bad">
-                            <option value="Tired">Tired</option>
-                            <option value="Sad">Sad</option>
-                            <option value="Bored">Bored</option>
-                        </optgroup>
-                    </select>
-                    <br><br>
-                    <label>What did you do today?:</label>
-                    <input type="text" id="message" name="message">
-                    <br><br>
-                    <label>Upload an image:</label>
-                    <input type="file" name="myImage" accept="image/*" />
-                    <br><br>
-                    <input type="submit" value="Post">
-                </form>
-            </div>
+    <div class="tab">
+
+      <button class="tablinks">
+        <!-- Goes back to home and saves scroll position -->
+        <a href="javascript:window.history.back();"><i class="fa-solid fa-arrow-left fa-fw"></i>Back</a>
+      </button>
+
+
+    </div>
+
+    <br>
+    <br>
+
+
+
+    <!-- generate a div for each element in posts data -->
+    <div class="post-container">
+
+      <div class="post">
+
+
+        <div class="info">
+
+          <div class="user">
+
+            <img class="profile-image" src="../<%=profilePic%>">
+
+
+            <% if (post.postedBy===currentUser) { %>
+
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
+
+            <%} else {%>
+
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
+
+            <% };%>
+
+          </div>
+
+
+
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
+
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+           if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+           if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
+
+          <p class="time">
+            <%= displayTime %>
+          </p>
 
         </div>
 
-</body>
+        <% if (post.imagePath) { %>
+        <img class="post-image" src="/<%= post.imagePath %>">
+        <%}%>
 
-</html>
+                            <p class="message">
+                                <%= post.message %>
+        </p>
+
+
+        <div class="action-buttons">
+
+          <% let liked=false %>
+
+          <% for (var i=0; i < post.likedBy.length; i++) { %>
+
+          <% if (post.likedBy[i].username===currentUser) { liked=true; break; }} %>
+
+          <% if(liked==true) { %>
+
+          <button class="actionBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+            <i class="fa-solid fa-heart"></i>
+            <%= post.likes %>
+          </button>
+
+          <%} else {%>
+
+          <button class="actionBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id%>>
+            <i class="fa-regular fa-heart fa-fw"></i>
+            <%= post.likes %>
+          </button>
+
+          <% }%>
+
+
+          <% if (post.postedBy===currentUser) { %>
+
+          <button class="actionBtn" id=<%=post._id %>>
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+          </button>
+          <% }%>
+
+        </div>
+
+      </div>
+
+      <div class="comment-field">
+
+        <form action="/comment" method="POST">
+
+          <textarea placeholder="New comment..." type="text" name="message"></textarea>
+
+          <input type='hidden' value='<%=post._id %>' name='postid' />
+
+          <button type="submit" class="comment-submit">
+            <i class="fa-solid fa-share"></i>
+        </button>
+
+        </form>
+
+      </div>
+
+      <% let index=0; %>
+
+      <% post.comments.slice().reverse().forEach(function(comment) { %>
+
+      <div class="comment">
+
+        <div class="user">
+
+          <img class="profile-image" src="../<%=commenterData[index].profilePic%>">
+
+          <% if (commenterData[index].username===currentUser) { %>
+
+          <a href="/myprofile">
+            <%=commenterData[index].username %>
+          </a>
+
+          <%} else {%>
+
+          <a href="/users/<%=commenterData[index].username %>">
+            <%=commenterData[index].username %>
+          </a>
+
+          <% };%>
+
+        </div>
+
+        <p><%=comment.comment %></p>
+
+      </div>
+
+      <% index++ %>
+      <% }) %>
+
+    </div>
+
+  </div>
+
+
+
+  <script>
+    //LIKE POST SCRIPT
+    function addLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/like', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            removeLike(postID)
+          };
+        })
+    }
+
+    function removeLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/unlike', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' +
+            fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            addLike(postID)
+          };
+        })
+    }
+  </script>

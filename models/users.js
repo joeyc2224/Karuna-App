@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 //bcrypt import
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { changePostUser } = require('./posts');
+const { changeJournalUser } = require('./journals');
 const saltRounds = 10
 
 const userSchema = new Schema({
@@ -73,6 +75,18 @@ async function getUsers() {
     return data;
 }
 
+async function getUser_id(username) {
+    let user = null
+    await Users.findOne({ username: username }).exec()
+        .then(mongoData => {
+            user = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+    return user._id;
+}
+
 async function findUser(username) {
     let user = null
     await Users.findOne({ username: username }).exec()
@@ -83,6 +97,36 @@ async function findUser(username) {
             console.log('Error:' + err)
         });
     return user;
+}
+
+async function findUserById(id) {
+    let user = null
+    await Users.findOne({ _id: id }).exec()
+        .then(mongoData => {
+            user = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+    return user;
+}
+
+// find profile picture based on user search
+async function getProfilePic(username) {
+    let user = null
+    await Users.findOne({ username: username }).exec()
+        .then(mongoData => {
+            user = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+
+    if (!user.profilePic) {
+        return "/images/user.png"
+    } else {
+        return user.profilePic
+    }
 }
 
 async function checkPassword(username, password, action) {
@@ -220,15 +264,26 @@ async function editProfile(user, data, imageFile) {
         //console.log("bio null")
     }
 
-    if (data.username) {//if username is changed
+    if (data.username) {//if username is changed 
 
         if (await findUser(data.username)) {
-            console.log('user exists')
+            console.log('user already exists')
             return false//username already exists - Update failed
         }
         else {
+
+            // userData = await findUser(user)
+
+            // for (const ally of userData.allies) {
+            //     await Users.findOneAndUpdate({ username: ally.username }, { $pull: { allies: user } }).exec()
+            //     await Users.findOneAndUpdate({ username: ally.username }, { $push: { allies: data.username } }).exec()
+            // }
+
+            await changePostUser(user, data.username)//changes the username attached to all posts made by user to avoid errors
+            await changeJournalUser(user, data.username)//changes the username attached to all posts made by user to avoid errors
+
             await Users.findOneAndUpdate({ username: user }, { username: data.username }).exec()
-            return true//username changed, tell serve to reload profile with new name
+            return true//username changed, tell server to reload profile with new name
         }
 
     } else {
@@ -236,4 +291,4 @@ async function editProfile(user, data, imageFile) {
     }
 }
 
-module.exports = { newUser, getUsers, findUser, checkPassword, setLoggedIn, isLoggedIn, followUser, unfollowUser, editProfile, requestAlly, unrequestAlly, acceptAlly, removeAlly }
+module.exports = { newUser, getUsers, getUser_id, findUser, findUserById, getProfilePic, checkPassword, setLoggedIn, isLoggedIn, followUser, unfollowUser, editProfile, requestAlly, unrequestAlly, acceptAlly, removeAlly }

@@ -73,22 +73,101 @@ function checkLoggedIn(request, response, nextAction) {
 
 //default page return 
 app.get('/', checkLoggedIn, function (request, response) {
-    response.render('pages/home', {
-        page: "home"//for setting active class on navbar
-    });
+    response.redirect('/home/trending')
 });
 
-app.get('/home', checkLoggedIn, async (request, response) => {
 
-    var posts = await postData.getPosts()//get posts and store
+app.get('/home/:postState', checkLoggedIn, async (request, response) => {
+
+    var posts;
+    let profilePics = []
+
+    if (request.params.postState === "following") {
+
+        var userData = await users.findUser(request.session.userid)//get user data from users.js
+
+        let following = []
+
+        userData.following.forEach(function (follow) {
+            following.push(follow.username)
+        })
+
+        following.push(request.session.userid)//add current user to list so their posts appear too
+
+        posts = await postData.getFollowingPosts(following)//get posts and store
+
+    } else {
+        posts = await postData.getTrendingPosts()//get posts and store
+    }
+
+    for (const post of posts) {
+
+        var userData = await users.findUser(post.postedBy)
+
+        if (!userData.profilePic) {
+            profilePics.push("/images/user.png")
+        } else {
+            profilePics.push(userData.profilePic)
+        }
+
+        //console.log(profilePics)
+
+    }
 
     response.render('pages/home', {
         posts: posts,//post data sent as variable
+        profilePics: profilePics,
+        tab: request.params.postState,
         currentUser: request.session.userid,
         page: "home"//for setting active class on navbar
     });
+})
 
-});
+
+//VIEW POST
+app.get('/post/:postID', checkLoggedIn, async (request, response) => {
+
+    var post = await postData.getPost(request.params.postID)//get the single post data
+    commenterData = []
+
+    // get profile pic to display with post
+    profilePic = await users.getProfilePic(post.postedBy)
+
+
+    for (const comment of post.comments) {//send commenter data separtly in case of name change
+
+        //uses ID so user comments can still be found after name change
+        var userData = await users.findUserById(comment.userObjId)
+
+        var userPP;
+
+        if (!userData.profilePic) {
+            userPP = "/images/user.png"
+        } else {
+            userPP = userData.profilePic
+        }
+
+        let userDataObJ = {
+            username: userData.username,
+            profilePic: userPP
+        }
+
+        commenterData.push(userDataObJ)
+
+    }
+
+    //console.log(commenterData)
+
+    response.render('pages/post', {
+        post: post, //user data 
+        commenterData: commenterData.reverse(),//reverse comment data because it is shown chronologically in post.ejs
+        profilePic: profilePic,
+        currentUser: request.session.userid,
+        page: ""//for setting no active class on navbar
+    });
+})
+
+
 
 app.get('/journal', checkLoggedIn, (request, response) => {
 
@@ -180,73 +259,7 @@ app.get('/users/:userId', checkLoggedIn, async (request, response) => {
     });
 })
 
-//user login routes
-app.get('/login', (request, response) => {
-    response.sendFile(path.resolve(__dirname, 'views/login/login.html'))
-})
 
-app.get('/signup', (request, response) => {
-    response.sendFile(path.resolve(__dirname, 'views/login/register.html'))
-})
-
-app.get('/loginfailed', (request, response) => {
-    response.sendFile(path.resolve(__dirname, 'views/login/failed-login.html'))
-})
-
-app.get('/signupfailed', (request, response) => {
-    response.sendFile(path.resolve(__dirname, 'views/login/failed-signup.html'))
-})
-
-
-
-//routes for account functions
-app.get('/logout', async (request, response) => {
-    console.log('User ' + request.session.userid + " logged out...")
-    await users.setLoggedIn(request.session.userid, false)
-    request.session.destroy()
-    response.redirect('/login')
-})
-
-
-//bcrypt compatible login
-app.post('/login', async (request, response) => {
-
-    let userData = request.body
-
-    if (await users.findUser(userData.username)) {
-        console.log('User ' + userData.username + " logged in...")
-        await users.checkPassword(userData.username, userData.password, async function (isMatch) {//if user exists with correct password
-            if (isMatch) {
-                console.log('password matches')
-                request.session.userid = userData.username
-                await users.setLoggedIn(userData.username, true)
-                response.redirect('/home')
-            } else {
-                console.log('password wrong')
-                response.redirect('/loginfailed')
-            }
-        })
-    } else {
-        console.log('no such user')
-        response.redirect('/loginfailed')
-    }
-})
-
-//controller for registering a new user
-app.post('/register', async (request, response) => {
-    console.log(request.body)
-    let userData = request.body
-    if (await users.findUser(userData.username)) {
-        console.log('user exists')
-        response.redirect('/signupfailed')
-    } else {
-        users.newUser(userData.username, userData.password)//adds user to db
-        request.session.userid = userData.username
-        await users.setLoggedIn(userData.username, true)//then logs them in
-        response.redirect('/home')
-    }
-    //console.log(users.getUsers())
-})
 
 
 
@@ -268,7 +281,7 @@ app.post('/newpost', upload.single('myImage'), async (request, response) => {
     }
 
     await postData.addNewPost(request.session.userid, request.body, filename)
-    response.redirect('/home')
+    response.redirect('/home/following')
 })
 
 
@@ -297,6 +310,16 @@ app.post('/unlike', async (request, response) => {
     )
 })
 
+
+// COMMENTING ROUTE
+app.post('/comment', async (request, response) => {
+
+    await postData.comment(request.body.postid, request.session.userObjId, request.body.message)
+
+    console.log(request.session.userObjId, request.session.userid)
+
+    response.redirect('/post/' + request.body.postid)
+})
 
 //handles emoji reaction in journal posts
 app.post('/reaction', async (request, response) => {
@@ -350,7 +373,7 @@ app.post('/declineally', async (request, response) => {
 
 app.post('/removeally', async (request, response) => {
     await users.removeAlly(request.session.userid, request.body.name)
-    response.redirect('/home')
+    response.redirect('/users/' + request.body.name)
 })
 
 
@@ -361,6 +384,82 @@ app.get('/getmooddata', async (request, response) => {
     )
 })
 
+
+
+
+
+
+// USER SESSION ROUTES
+app.get('/login', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'views/login/login.html'))
+})
+
+app.get('/signup', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'views/login/register.html'))
+})
+
+app.get('/loginfailed', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'views/login/failed-login.html'))
+})
+
+app.get('/signupfailed', (request, response) => {
+    response.sendFile(path.resolve(__dirname, 'views/login/failed-signup.html'))
+})
+
+
+
+//routes for account functions
+app.get('/logout', async (request, response) => {
+    console.log('User ' + request.session.userid + " logged out...")
+    await users.setLoggedIn(request.session.userid, false)
+    request.session.destroy()
+    response.redirect('/login')
+})
+
+
+
+
+//bcrypt compatible login
+app.post('/login', async (request, response) => {
+
+    let userData = request.body
+
+    if (await users.findUser(userData.username)) {
+        console.log('User ' + userData.username + " logged in...")
+        await users.checkPassword(userData.username, userData.password, async function (isMatch) {//if user exists with correct password
+            if (isMatch) {
+                console.log('password matches')
+                request.session.userid = userData.username
+                request.session.userObjId = await users.getUser_id(userData.username)
+                await users.setLoggedIn(userData.username, true)
+                response.redirect('/home/trending')
+            } else {
+                console.log('password wrong')
+                response.redirect('/loginfailed')
+            }
+        })
+    } else {
+        console.log('no such user')
+        response.redirect('/loginfailed')
+    }
+})
+
+//controller for registering a new user
+app.post('/register', async (request, response) => {
+    console.log(request.body)
+    let userData = request.body
+    if (await users.findUser(userData.username)) {
+        console.log('user exists')
+        response.redirect('/signupfailed')
+    } else {
+        users.newUser(userData.username, userData.password)//adds user to db
+        request.session.userid = userData.username
+        request.session.userObjId = await users.getUser_id(userData.username)
+        await users.setLoggedIn(userData.username, true)//then logs them in
+        response.redirect('/home/trending')
+    }
+    //console.log(users.getUsers())
+})
 
 
 

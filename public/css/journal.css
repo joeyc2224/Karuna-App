@@ -64,14 +64,3 @@ select {
 option{
     font-size: 20px;
 }
-
-.tag-cloud {
-    font-size: 16px;
-  display: inline-block;
-  color: white;
-  padding: 8px 20px;
-  font-family: Arial;
-  border-radius: 25px;
-  background-color: #1a1a1a;
-  margin-top: 8px;
-}

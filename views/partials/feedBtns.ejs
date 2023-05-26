@@ -1,0 +1,10 @@
+<!-- tab buttons -->
+<div class="tab">
+
+    <button <% if (tab==='trending' ) { %>class="tablinks active" <% } else{%>class="tablinks" <%}%> >
+                <a href="/home/trending"><!-- <i class="fa-solid fa-arrow-trend-up fa-fw"></i> -->Trending</a></button>
+
+    <button <% if (tab==='following' ) { %>class="tablinks active" <% } else{%>class="tablinks" <%} %> >
+                <a href="/home/following"><!-- <i class="fa-solid fa-user-group fa-fw"></i> -->Following</a></button>
+
+</div>

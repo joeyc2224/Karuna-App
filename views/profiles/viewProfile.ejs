@@ -2,158 +2,146 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
-        <link rel="stylesheet" type="text/css" href="/css/profile.css">
+  <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
+  <link rel="stylesheet" type="text/css" href="/css/profile.css">
 </head>
 
 <body>
 
-    <%- include('../partials/sidenav'); %>
+  <%- include('../partials/sidenav'); %>
 
-        <div class="main profile">
+  <div class="main profile">
 
-            <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src= "/<%=
-                    user.profilePic %>" <% } %> >
+    <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src="/<%=
+                    user.profilePic %>" <% } %>>
 
-                        <h2>
-                            <%= user.username %>
-                        </h2>
+    <h2>
+      <%= user.username %>
+    </h2>
 
-                        <p>
-                            <%= user.bio %>
-                        </p>
+    <p>
+      <%= user.bio %>
+    </p>
 
-                        <!-- <form action='/follow' method='post'>
+    <!-- <form action='/follow' method='post'>
                             <input type='hidden' value='<%= user.username %>' name='name' />
                             <button type="submit" class="stdBtn">
                                 <i class="fa-solid fa-plus"></i>Follow
                             </button>
                         </form> -->
 
-                        <div style="display: flex; justify-content: center;">
+    <div style="display: flex; justify-content: center;">
 
-                            <!-- Follow Button -->
-                            <% let following=false %>
+      <!-- Follow Button -->
+      <% let following=false %>
 
-                                <% for (var i=0; i < user.followers.length; i++) { %>
+      <% for (var i=0; i < user.followers.length; i++) { %>
 
-                                    <% if (user.followers[i].username===currentUser) { following=true; break; }} %>
+      <% if (user.followers[i].username===currentUser) { following=true; break; }} %>
 
-                                        <% if(following==true) { %>
+      <% if(following==true) { %>
 
-                                            <form action='/unfollow' method='post'>
-                                                <input type='hidden' value='<%= user.username %>' name='name' />
-                                                <button type="submit" class="stdBtn">
-                                                    <i class="fa-solid fa-minus"></i>Unfollow
-                                                </button>
-                                            </form>
+      <form action='/unfollow' method='post'>
+        <input type='hidden' value='<%= user.username %>' name='name' />
+        <button type="submit" class="stdBtn">
+          <i class="fa-solid fa-minus"></i>Unfollow
+        </button>
+      </form>
 
-                                            <%} else {%>
+      <%} else {%>
 
-                                                <form action='/follow' method='post'>
-                                                    <input type='hidden' value='<%= user.username %>' name='name' />
-                                                    <button type="submit" class="stdBtn">
-                                                        <i class="fa-solid fa-plus"></i>Follow
-                                                    </button>
-                                                </form>
+      <form action='/follow' method='post'>
+        <input type='hidden' value='<%= user.username %>' name='name' />
+        <button type="submit" class="stdBtn">
+          <i class="fa-solid fa-plus"></i>Follow
+        </button>
+      </form>
 
-                                                <% }%>
+      <% }%>
 
 
-                                                    <!-- Allies button -->
-                                                    <% let allies=false %>
+      <!-- Allies button -->
+      <% let allies=false %>
 
-                                                        <% for (var i=0; i < user.allies.length; i++) { %>
+      <% for (var i=0; i < user.allies.length; i++) { %>
 
-                                                            <!-- if already ally -->
-                                                            <% if (user.allies[i].username===currentUser) { allies=true;
+      <!-- if already ally -->
+      <% if (user.allies[i].username===currentUser) { allies=true;
                                                                 break; }} %>
 
-                                                                <% if(allies==true) { %>
+      <% if(allies==true) { %>
 
-                                                                    <form action='/removeally' method='post'>
-                                                                        <input type='hidden'
-                                                                            value='<%= user.username %>' name='name' />
-                                                                        <button type="submit" class="stdBtn" style="background-color: firebrick;">
-                                                                            <i class="fa-solid fa-user-minus fa-fw"></i>Remove Ally
-                                                                        </button>
-                                                                    </form>
+      <form action='/removeally' method='post'>
+        <input type='hidden' value='<%= user.username %>' name='name' />
+        <input type='hidden' value='<%= user._id %>' name='id' />
+        <button type="submit" class="stdBtn" style="background-color: firebrick;">
+          <i class="fa-solid fa-user-minus fa-fw"></i>Remove Ally
+        </button>
+      </form>
 
-                                                                    <%} else{%>
+      <%} else{%>
 
-                                                                        <% let requested=false %>
+      <% let requested=false %>
 
-                                                                            <% for (var i=0; i < user.requests.length;
-                                                                                i++) { %>
+      <% for (var i=0; i < user.requests.length;i++) { %>
 
-                                                                                <% if
-                                                                                    (user.requests[i].username===currentUser)
-                                                                                    { requested=true; break; }} %>
+      <% if (user.requests[i].username===currentUser) { requested=true; break; }} %>
 
-                                                                                    <% if(requested==true) { %>
+      <% if(requested==true) { %>
 
-                                                                                        <form action='/unrequestally'
-                                                                                            method='post'>
-                                                                                            <input type='hidden'
-                                                                                                value='<%= user.username %>'
-                                                                                                name='name' />
-                                                                                            <button type="submit"
-                                                                                                class="stdBtn" style="background-color: firebrick;">
-                                                                                                <i
-                                                                                                    class="fa-solid fa-minus fa-fw"></i>Remove
-                                                                                                Request
-                                                                                            </button>
-                                                                                        </form>
+      <form action='/unrequestally' method='post'>
+        <input type='hidden' value='<%= user.username %>' name='name' />
+        <input type='hidden' value='<%= user._id %>' name='id' />
+        <button type="submit" class="stdBtn" style="background-color: firebrick;">
+          <i class="fa-solid fa-minus fa-fw"></i>Remove
+          Request
+        </button>
+      </form>
 
-                                                                                        <%} else{%>
+      <%} else{%>
 
-                                                                                            <form
-                                                                                                action='/requestally'
-                                                                                                method='post'>
-                                                                                                <input type='hidden'
-                                                                                                    value='<%= user.username %>'
-                                                                                                    name='name' />
-                                                                                                <button type="submit"
-                                                                                                    class="stdBtn">
-                                                                                                    <i
-                                                                                                        class="fa-solid fa-user-plus fa-fw"></i>Request
-                                                                                                    Ally
-                                                                                                </button>
-                                                                                            </form>
+      <form action='/requestally' method='post'>
+        <input type='hidden' value='<%= user.username %>' name='name' />
+        <input type='hidden' value='<%= user._id %>' name='id' />
+        <button type="submit" class="stdBtn">
+          <i class="fa-solid fa-user-plus fa-fw"></i>Request
+          Ally
+        </button>
+      </form>
 
-                                                                                            <% }}%>
+      <% }}%>
 
 
-                        </div>
+    </div>
 
 
 
 
-                        <div class="stats">
+    <div class="stats">
 
-                            <div>
-                                <p class="title">
-                                    Followers
-                                </p>
+      <div>
+        <p class="title">
+          Followers
+        </p>
 
-                                <p>
-                                    <%= user.followers.length %>
-                                </p>
-                            </div>
+        <p>
+          <%= user.followers.length %>
+        </p>
+      </div>
 
-                            <div>
-                                <p class="title">
-                                    Following
-                                </p>
+      <div>
+        <p class="title">
+          Following
+        </p>
 
-                                <p>
-                                    <%= user.following.length %>
-                                </p>
-                            </div>
+        <p>
+          <%= user.following.length %>
+        </p>
+      </div>
 
-                        </div>
+    </div>
 
-        </div>
+  </div>
 
 </body>
 
