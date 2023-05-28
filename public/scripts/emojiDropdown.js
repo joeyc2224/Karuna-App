@@ -1,4 +1,4 @@
-//code for custom emoji select form
+//code for custom emoji select form - adapted from https://www.w3schools.com/howto/howto_custom_select.asp 
 var x, i, j, l, ll, selElmnt, a, b, c;
 
 x = document.getElementsByClassName("custom-select");

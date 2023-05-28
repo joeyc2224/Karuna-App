@@ -1,3 +1,12 @@
+.main {
+    text-align: center;
+}
+
+.central-container{
+    max-width: 800px;
+    margin: auto;
+}
+
 .request {
     text-align: center;
 
@@ -17,7 +26,6 @@
     overflow: hidden;
     background-color: #4b4b4b;
     border-radius: 4px 4px 0px 0px;
-
 }
 
 .tab button {
@@ -34,7 +42,6 @@
     cursor: pointer;
     padding: 14px 16px;
     font-size: 17px;
-
 }
 
 .tab button .fa-solid {

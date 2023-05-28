@@ -77,6 +77,7 @@ app.get('/', checkLoggedIn, function (request, response) {
 });
 
 
+//HOME PAGE with route parameter to determine whether to load following or trending posts - my own code
 app.get('/home/:postState', checkLoggedIn, async (request, response) => {
 
     var posts;
@@ -124,7 +125,7 @@ app.get('/home/:postState', checkLoggedIn, async (request, response) => {
 })
 
 
-//VIEW POST
+//VIEW SINGLE POST - my own code
 app.get('/post/:postID', checkLoggedIn, async (request, response) => {
 
     var post = await postData.getPost(request.params.postID)//get the single post data
@@ -168,12 +169,59 @@ app.get('/post/:postID', checkLoggedIn, async (request, response) => {
 })
 
 
+//EDIT POST ejs page with form to change post elements - my own code
+app.get('/editpost/:postID', checkLoggedIn, async (request, response) => {
+
+    var post = await postData.getPost(request.params.postID)//get the single post data
+
+    profilePic = await users.getProfilePic(post.postedBy)
+
+    response.render('pages/editPost', {
+        post: post, //user data 
+        profilePic: profilePic,
+        currentUser: request.session.userid,
+        page: ""//for setting no active class on navbar
+    });
+})
+
+//EDIT Post push to mongoDB 
+app.post('/editpostdata', upload.single('newPic'), async (request, response) => {
+
+    let filename = null
+
+    if (request.file && request.file.filename) { //check that a file was passed with a valid name
+        filename = 'uploads/' + request.file.filename
+    }
+
+    await postData.editPost(request.body.postid, request.body, filename)//var stores bool returned for username change
+
+
+    response.redirect('/post/' + request.body.postid)
+})
+
+
+
+app.get('/deletepost/:postID', upload.single('newPic'), async (request, response) => {
+
+    await postData.deletePost(request.params.postID)//delete post using ID
+
+    response.redirect('/home/trending')
+})
+
+
 
 app.get('/journal', checkLoggedIn, (request, response) => {
 
     response.render('pages/journal', {
         page: "journal"//for setting active class on navbar
     });
+})
+
+//get mood data for journal graph
+app.get('/getmooddata', async (request, response) => {
+    response.json(
+        { logs: await journalData.getUserJournals(request.session.userid) }//get just current user's check in data
+    )
 })
 
 
@@ -192,12 +240,28 @@ app.get('/allies', checkLoggedIn, async (request, response) => {
 
     var logs = await journalData.getAlliesJournals(allies)//get posts and store
 
+    let profilePics = []
+
+    for (const log of logs) {
+
+        var userData = await users.findUser(log.postedBy)
+
+        if (!userData.profilePic) {
+            profilePics.push("/images/user.png")
+        } else {
+            profilePics.push(userData.profilePic)
+        }
+
+        //console.log(profilePics)
+
+    }
+
     response.render('pages/allies', {
         posts: logs,//post data sent as variable
+        profilePics: profilePics,
         currentUser: request.session.userid,
         page: "feed"//for setting active class on navbar
     });
-
 })
 
 app.get('/inbox', checkLoggedIn, async (request, response) => {
@@ -215,14 +279,17 @@ app.get('/inbox', checkLoggedIn, async (request, response) => {
 app.get('/myprofile', checkLoggedIn, async (request, response) => {
 
     var userData = await users.findUser(request.session.userid)//get user data from users.js
+    var userPostData = await postData.userPosts(request.session.userid)//get user data from users.js
 
     response.render('profiles/myProfile', {
         user: userData, //user data 
+        userPosts: userPostData,
+        currentUser: request.session.userid,
         page: "profile"//for setting active class on navbar
     });
-
 })
 
+//edit profile route - my own code with checks for valid changes beofre pushing to mongoose
 app.post('/editprofile', upload.single('profilePic'), async (request, response) => {
 
     let filename = null
@@ -246,14 +313,17 @@ app.post('/editprofile', upload.single('profilePic'), async (request, response) 
 })
 
 
-//VIEW OTHER USER PROFILE
+//VIEW OTHER USER PROFILE - my own code using route variables
 app.get('/users/:userId', checkLoggedIn, async (request, response) => {
 
     var userData = await users.findUser(request.params.userId)//get user data from users.js
     //console.log(request.body.name)
 
+    var userPostData = await postData.userPosts(request.params.userId)//get user data from users.js
+
     response.render('profiles/viewProfile', {
         user: userData, //user data 
+        userPosts: userPostData,
         currentUser: request.session.userid,
         page: ""//for setting active class on navbar
     });
@@ -272,7 +342,7 @@ app.post('/newcheckin', async (request, response) => {
 })
 
 
-//NEW STANDARD
+//NEW STANDARD POSTING WITH IMAGES - based on in class code
 app.post('/newpost', upload.single('myImage'), async (request, response) => {
 
     let filename = null
@@ -341,9 +411,15 @@ app.post('/follow', async (request, response) => {
     response.redirect('/users/' + request.body.name)
 })
 
-app.post('/unfollow', async (request, response) => {
-    await users.unfollowUser(request.body.name, request.session.userid)
-    response.redirect('/users/' + request.body.name)
+app.get('/unfollow/:user/:redirect', async (request, response) => {
+
+    await users.unfollowUser(request.params.user, request.session.userid)
+
+    if (request.params.redirect == "VP") {//VP for view profile or my profile - determines which page to return after request
+        response.redirect("/users/" + request.params.user)
+    } else {
+        response.redirect("/myprofile")
+    }
 })
 
 
@@ -371,25 +447,26 @@ app.post('/declineally', async (request, response) => {
     response.redirect('/inbox')
 })
 
-app.post('/removeally', async (request, response) => {
-    await users.removeAlly(request.session.userid, request.body.name)
-    response.redirect('/users/' + request.body.name)
+app.get('/removeally/:user/:redirect', async (request, response) => {
+
+    await users.removeAlly(request.session.userid, request.params.user)
+
+    if (request.params.redirect == "VP") {//VP for view profile or my profile - determines which page to return after request
+        response.redirect("/users/" + request.params.user)
+    } else {
+        response.redirect("/myprofile")
+    }
 })
 
 
-//get mood data for journal graph
-app.get('/getmooddata', async (request, response) => {
-    response.json(
-        { logs: await journalData.getUserJournals(request.session.userid) }//get just current user's check in data
-    )
-})
 
 
 
 
 
 
-// USER SESSION ROUTES
+
+// USER SESSION ROUTES - mostly from class sessions
 app.get('/login', (request, response) => {
     response.sendFile(path.resolve(__dirname, 'views/login/login.html'))
 })

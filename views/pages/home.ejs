@@ -110,17 +110,16 @@
 
           <% if (post.postedBy===currentUser) { %>
 
-          <button class="actionBtn" id=<%=post._id %>>
-            <i class="fa-solid fa-pen-to-square"></i>
-            Edit
+          <button class="actionBtn">
+            <a href="/editpost/<%=post._id %>">
+              <i class="fa-solid fa-pen-to-square fa-fw"></i>
+              Edit
+            </a>
           </button>
+
           <% }%>
 
         </div>
-
-
-
-
 
       </div>
 
@@ -187,15 +186,30 @@
 
       <span class="close">&times;</span>
 
+      <h1><i style="margin-right: 10px;" class="fa-solid fa-circle-plus"></i>New Post</h1>
+
       <form action="/newpost" enctype="multipart/form-data" method="POST">
-        <label>Caption:</label>
-        <input type="text" id="message" name="message">
-        <br><br>
-        <label>Upload an image:</label>
-        <input type="file" name="myImage" accept="image/*" />
-        <br><br>
-        <input type="submit" value="Post">
-      </form>
+
+        <div class="image-input">
+
+          <label>Upload an image</label>
+
+          <br>
+
+          <input type="file" name="myImage" accept="image/*" />
+
+        </div>
+
+        <div class="caption-input">
+
+          <label>Caption</label>
+          <input type="text" id="message" name="message" placeholder="Type here">
+
+        </div>
+
+        <button type="submit" class="stdBtn">
+          <i class="fa-solid fa-paper-plane fa-fw"></i></i>Post
+        </button>
 
       </form>
 
@@ -205,23 +219,23 @@
 
   <script>
     //modal script
-    var modal = document.getElementById("postModal");
+    var postModal = document.getElementById("postModal");
 
-    var btn = document.getElementById("postBtn");
+    var postBtn = document.getElementById("postBtn");
 
     var span = document.getElementsByClassName("close")[0];
 
-    btn.onclick = function() {
-      modal.style.display = "block";
+    postBtn.onclick = function() {
+      postModal.style.display = "block";
     }
 
     span.onclick = function() {
-      modal.style.display = "none";
+      postModal.style.display = "none";
     }
 
     window.onclick = function(event) {
       if (event.target == modal) {
-        modal.style.display = "none";
+        postModal.style.display = "none";
       }
     }
   </script>

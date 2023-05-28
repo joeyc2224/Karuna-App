@@ -35,7 +35,7 @@ function addNewPost(userID, post, imageFile) {
         })
 }
 
-//return posts
+//return posts - from class, not longer used
 async function getPosts(n = 20) {
     let data = []
     await Posts.find({})
@@ -51,6 +51,7 @@ async function getPosts(n = 20) {
     return data;
 }
 
+//returns specific single post - from class
 async function getPost(postid) {
     let data = null;
     await Posts.findById(postid)
@@ -64,10 +65,11 @@ async function getPost(postid) {
     return data;
 }
 
+//get all posts, sorted by like count
 async function getTrendingPosts() {
     let data = []
     await Posts.find({})
-        .sort({ 'likes': -1 })
+        .sort({ 'likes': -1 })//sort by likes
         .exec()
         .then(mongoData => {
             data = mongoData;
@@ -78,10 +80,26 @@ async function getTrendingPosts() {
     return data;
 }
 
+//using following list passed as parameter get all posts from people I follow
 async function getFollowingPosts(following) {
     let data = []
     //console.log(allies)
     await Posts.find({ postedBy: following })
+        .sort({ 'time': -1 })
+        .exec()
+        .then(mongoData => {
+            data = mongoData;
+        })
+        .catch(err => {
+            console.log('Error:' + err)
+        });
+    return data;
+}
+
+async function userPosts(user) {
+    let data = []
+    //console.log(allies)
+    await Posts.find({ postedBy: user })
         .sort({ 'time': -1 })
         .exec()
         .then(mongoData => {
@@ -117,6 +135,7 @@ async function unlikePost(likedPostID, likedByID) {
     await Posts.findByIdAndUpdate(likedPostID, { $pull: { likedBy: liker } }).exec()
 }
 
+//for client side JS so that like count is dynamically updated
 async function refreshLikes(likedPostID) {
 
     await Posts.findById(likedPostID)
@@ -127,9 +146,8 @@ async function refreshLikes(likedPostID) {
     return likes;
 }
 
-
+//add a comment - i used the object ID instead of the username here so that a username change wont cause problems in comment rendering
 async function comment(PostID, user_id, comment) {
-    let found
 
     let newComment = {
         userObjId: user_id,
@@ -139,14 +157,39 @@ async function comment(PostID, user_id, comment) {
     }
 
     await Posts.findByIdAndUpdate(PostID, { $push: { comments: newComment } }).exec()
-    //.then(foundData => found = foundData)
-    // console.log(found)
 }
 
+
+async function editPost(PostID, newData, imageFile) {
+
+    if (imageFile) {//if pic is changed
+        await Posts.findByIdAndUpdate(PostID, { imagePath: imageFile }).exec()
+    } else {
+        //console.log("pic null")
+    }
+
+    if (newData.caption) {//only chnage if data is entered
+        await Posts.findByIdAndUpdate(PostID, { message: newData.caption }).exec()
+        console.log(newData)
+
+    } else {
+        console.log(newData)
+    }
+
+}
+
+//change postedBy username when username is changed - uses updateMany method to find all posts by 'username' - my own code
 async function changePostUser(currentName, newName) {
 
     await Posts.updateMany({ postedBy: currentName }, { postedBy: newName }).exec()//finds all older usernames and changes them to the new one
 
 }
 
-module.exports = { addNewPost, getPosts, getPost, getTrendingPosts, getFollowingPosts, likePost, refreshLikes, unlikePost, comment, changePostUser }
+async function deletePost(PostID) {
+
+    await Posts.deleteOne({ _id: PostID })
+    console.log("post " + PostID + " deleted")
+
+}
+
+module.exports = { addNewPost, getPosts, getPost, getTrendingPosts, getFollowingPosts, userPosts, likePost, refreshLikes, unlikePost, comment, editPost, changePostUser, deletePost }

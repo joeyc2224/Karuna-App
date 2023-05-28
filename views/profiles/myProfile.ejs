@@ -2,155 +2,390 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
-        <link rel="stylesheet" type="text/css" href="css/profile.css">
+  <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
+  <link rel="stylesheet" type="text/css" href="css/profile.css">
+  <link rel="stylesheet" type="text/css" href="css/home.css">
+
 </head>
 
 <body>
 
-    <%- include('../partials/sidenav'); %>
+  <%- include('../partials/sidenav'); %>
 
-        <div class="main profile">
+  <div class="main">
 
-            <img class="profile-image" <% if (!user.profilePic) { %> src="images/user.png" <% } else { %> src= "<%=
-                    user.profilePic %>" <% } %> >
+    <div class="main-profile">
 
-                        <h2>
-                            <%= user.username %>
-                        </h2>
+      <img class="profile-image" <% if (!user.profilePic) { %> src="images/user.png" <% } else { %> src="<%=
+                        user.profilePic %>" <% } %>>
 
-                        <p>
-                            <%= user.bio %>
-                        </p>
+      <h2>
+        <%= user.username %>
+      </h2>
 
-                        <button class="stdBtn" id="editProfile">
-                            <i class="fa-solid fa-gear"></i>Edit Profile
-                        </button>
+      <p>
+        <%= user.bio %>
+      </p>
 
-                        <div id="editProfileModal" class="modal">
+      <button class="stdBtn" id="editProfile">
+        <i class="fa-solid fa-gear"></i>Edit Profile
+      </button>
 
-                            <div class="modal-content">
+      <div id="editProfileModal" class="modal">
 
-                                <span class="close">&times;</span>
+        <div class="modal-content">
 
-                                <form action="/editprofile" enctype="multipart/form-data" method="POST">
+          <span class="close">&times;</span>
 
-                                    <label>Profile Picture:</label>
-                                    <input type="file" name="profilePic" accept="image/*" />
-                                    <br><br>
+          <form action="/editprofile" enctype="multipart/form-data" method="POST">
 
-                                    <label>Edit Username:</label>
-                                    <input type="text" name="username" placeholder="<%= user.username %>">
-                                    <br><br>
+            <label>Profile Picture:</label>
+            <input type="file" name="profilePic" accept="image/*" />
+            <br><br>
 
-                                    <label>Change Password:</label>
-                                    <input type="text" name="password" placeholder="password">
-                                    <br><br>
+            <label>Edit Username:</label>
+            <input type="text" name="username" placeholder="<%= user.username %>">
+            <br><br>
 
-                                    <label>Edit Bio:</label>
-                                    <textarea name="bio" placeholder="<%= user.bio %>"></textarea>
-                                    <br><br>
+            <label>Change Password:</label>
+            <input type="text" name="password" placeholder="password">
+            <br><br>
 
-                                    <button type="submit" class="stdBtn">
-                                        <i class="fa-solid fa-floppy-disk"></i>Save Changes
-                                    </button>
+            <label>Edit Bio:</label>
+            <textarea name="bio" placeholder="<%= user.bio %>"></textarea>
+            <br><br>
 
-                                </form>
+            <button type="submit" class="stdBtn">
+              <i class="fa-solid fa-floppy-disk"></i>Save Changes
+            </button>
 
-                            </div>
-
-                        </div>
-
-                        <script>
-
-                            var modal = document.getElementById("editProfileModal");
-
-                            var btn = document.getElementById("editProfile");
-
-                            var span = document.getElementsByClassName("close")[0];
-
-                            btn.onclick = function () {
-                                modal.style.display = "block";
-                            }
-
-                            span.onclick = function () {
-                                modal.style.display = "none";
-                            }
-
-                            window.onclick = function (event) {
-                                if (event.target == modal) {
-                                    modal.style.display = "none";
-                                }
-                            }
-                        </script>
-
-                        <div class="stats">
-
-                            <div>
-                                <p class="title">
-                                    Followers
-                                </p>
-
-                                <p>
-                                    <%= user.followers.length %>
-                                </p>
-                            </div>
-
-                            <div>
-                                <p class="title">
-                                    Following
-                                </p>
-
-                                <p>
-                                    <%= user.following.length %>
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <h2>Followers</h2>
-                        <div class="allies">
-
-                            <% user.followers.forEach(function(follower) { %>
-
-                                <div>
-
-                                    <p>
-                                        <%= follower.username %>
-                                    </p>
-
-                                </div>
-
-                                <% }); %>
-
-                        </div>
-
-                        <h2>Allies</h2>
-                        <div class="allies">
-
-                            <% user.allies.forEach(function(ally) { %>
-
-                                <div>
-
-                                    <p>
-                                        <%= ally.username %>
-                                    </p>
-
-                                </div>
-
-                                <% }); %>
-
-                        </div>
+          </form>
 
         </div>
 
-</body>
+      </div>
 
-<script>
-    function editProfile() {
+      <script>
+        var modal = document.getElementById("editProfileModal");
 
+        var btn = document.getElementById("editProfile");
+
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+          modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+      </script>
+
+      <div class="stats">
+
+        <div>
+          <p class="title">
+            Followers
+          </p>
+
+          <p>
+            <%= user.followers.length %>
+          </p>
+        </div>
+
+        <div>
+          <p class="title">
+            Following
+          </p>
+
+          <p>
+            <%= user.following.length %>
+          </p>
+        </div>
+
+      </div>
+
+      <div class="tabs">
+        <button class="tabslinks" onclick="openTab(event, 'allies')" id="defaultOpen">Allies</button>
+        <button class="tabslinks" onclick="openTab(event, 'following')">Following</button>
+        <button class="tabslinks" onclick="openTab(event, 'followers')">Followers</button>
+      </div>
+
+      <div id="allies" class="tabcontent">
+
+        <% if (!user.allies.length) { %>
+
+        <p>No allies yet...</p>
+
+        <%} else {%>
+
+        <% user.allies.forEach(function(user) { %>
+
+        <div class="user-div">
+
+          <a href="/users/<%= user.username %>">
+            <%= user.username %>
+          </a>
+
+          <button class="stdBtn" style="background-color: firebrick;">
+            <a href="/removeally/<%=user.username %>/MP">
+              <i class="fa-solid fa-user-minus fa-fw"></i>Remove Ally
+            </a>
+          </button>
+
+        </div>
+
+        <% })}; %>
+
+      </div>
+
+      <div id="following" class="tabcontent">
+
+        <% if (!user.following.length) { %>
+
+        <p>People you follow will show up here!</p>
+
+        <%} else {%>
+
+        <% user.following.forEach(function(user) { %>
+
+        <div class="user-div">
+
+          <a href="/users/<%= user.username %>">
+            <%= user.username %>
+          </a>
+
+          <button class="stdBtn">
+            <a href="/unfollow/<%=user.username %>/MP">
+              <i class="fa-solid fa-user-minus fa-fw"></i>Unfollow
+            </a>
+          </button>
+
+        </div>
+
+        <% })}; %>
+
+      </div>
+
+      <div id="followers" class="tabcontent">
+
+        <% if (!user.followers.length) { %>
+
+        <p>Nobody follows you &#128530;</p>
+
+        <%} else {%>
+
+        <% user.followers.forEach(function(follower) { %>
+
+        <div class="user-div" style="display: block; text-align: center; padding: 20px;">
+
+          <a href="/users/<%= follower.username %>">
+            <%= follower.username %>
+          </a>
+
+        </div>
+
+        <% })}; %>
+
+      </div>
+
+
+      <script>
+        function openTab(evt, tabName) {
+          var i, tabcontent, tabslinks;
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          tabslinks = document.getElementsByClassName("tabslinks");
+          for (i = 0; i < tabslinks.length; i++) {
+            tabslinks[i].className = tabslinks[i].className.replace(" active", "");
+          }
+          document.getElementById(tabName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+
+        document.getElementById("defaultOpen").click();
+      </script>
+
+    </div>
+
+    <!-- show user's recent public posts -->
+    <div class="post-container">
+
+      <h3 style="text-align: left; margin-top: 100px; margin-bottom: 10px;">Recent posts</h3>
+
+      <% if (!userPosts.length) { %>
+
+      <p>You haven't posted yet!</p>
+
+      <%} else {%>
+
+      <% let index=0; %>
+      <!-- for iterating profile pic list -->
+
+      <% userPosts.forEach(function(post) { %>
+
+      <div class="post">
+
+
+        <div class="info">
+
+          <div class="user">
+
+            <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src="/<%=
+            user.profilePic %>" <% } %>>
+
+            <% if (post.postedBy===currentUser) { %>
+
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
+
+            <%} else {%>
+
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
+
+            <% };%>
+
+          </div>
+
+
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
+
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+                                                    if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+                                                    if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
+
+          <p class="time">
+            <%= displayTime %>
+          </p>
+
+        </div>
+
+        <% if (post.imagePath) { %>
+        <img class="post-image" src="/<%= post.imagePath %>">
+        <%}%>
+
+                                        <p class="message">
+                                            <%= post.message %>
+        </p>
+
+
+        <div class="action-buttons">
+
+          <% let liked=false %>
+
+          <% for (var i=0; i < post.likedBy.length; i++) { %>
+
+          <% if (post.likedBy[i].username===currentUser) { liked=true; break;
+                                                        }} %>
+
+          <% if(liked==true) { %>
+
+          <button class="actionBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+            <i class="fa-solid fa-heart"></i>
+            <%= post.likes %>
+          </button>
+
+          <%} else {%>
+
+          <button class="actionBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id%>>
+            <i class="fa-regular fa-heart fa-fw"></i>
+            <%= post.likes %>
+          </button>
+
+          <% }%>
+
+
+          <button class="actionBtn">
+            <a href="/post/<%=post._id %>">
+              <i class="fa-solid fa-comment fa-fw"></i>
+              <%= post.comments.length %>
+            </a>
+          </button>
+
+          <% if (post.postedBy===currentUser) { %>
+
+          <button class="actionBtn">
+            <a href="/editpost/<%=post._id %>">
+              <i class="fa-solid fa-pen-to-square fa-fw"></i>
+              Edit
+            </a>
+          </button>
+
+          <% }%>
+
+        </div>
+
+      </div>
+
+      <% index++ %>
+
+      <% })}; %>
+    </div>
+
+  </div>
+
+
+
+  <script>
+    //LIKE POST SCRIPT
+    function addLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/like', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            removeLike(postID)
+          };
+        })
     }
-</script>
+
+    function removeLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/unlike', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' +
+            fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            addLike(postID)
+          };
+        })
+    }
+  </script>
+
+  </div>
+
+
+</body>
 
 </html>

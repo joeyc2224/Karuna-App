@@ -28,7 +28,7 @@ function addNewLog(userID, log) {
         })
 }
 
-//return posts
+//return check in posts - similar to posts.js model - based on classwork
 async function getJournals(n = 20) {
     let data = []
     await Journal.find({})
@@ -44,7 +44,7 @@ async function getJournals(n = 20) {
     return data;
 }
 
-
+//only return mood check in posts from allies
 async function getAlliesJournals(allies) {
     let data = []
     //console.log(allies)
@@ -61,12 +61,11 @@ async function getAlliesJournals(allies) {
 }
 
 
-//return user posts
-async function getUserJournals(user, n = 20) {
+//return current user journal posts
+async function getUserJournals(user) {
     let data = []
     await Journal.find({ postedBy: user })//find journal data with just current username as poster
         .sort({ 'time': -1 })
-        //.limit(n)
         .exec()
         .then(mongoData => {
             data = mongoData;
@@ -77,6 +76,7 @@ async function getUserJournals(user, n = 20) {
     return data;
 }
 
+//react to allies posts with fun emojis
 async function reactJournal(journalID, emoji, reactByID) {
 
     let newReact = {

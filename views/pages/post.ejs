@@ -108,13 +108,15 @@
 
           <% }%>
 
-
           <% if (post.postedBy===currentUser) { %>
 
-          <button class="actionBtn" id=<%=post._id %>>
-            <i class="fa-solid fa-pen-to-square"></i>
-            Edit
+          <button class="actionBtn" onclick="">
+            <a href="/editpost/<%=post._id %>">
+              <i class="fa-solid fa-pen-to-square fa-fw"></i>
+              Edit
+            </a>
           </button>
+
           <% }%>
 
         </div>
@@ -125,13 +127,13 @@
 
         <form action="/comment" method="POST">
 
-          <textarea placeholder="New comment..." type="text" name="message"></textarea>
+          <input placeholder="New comment..." type="text" name="message">
 
           <input type='hidden' value='<%=post._id %>' name='postid' />
 
           <button type="submit" class="comment-submit">
             <i class="fa-solid fa-share"></i>
-        </button>
+          </button>
 
         </form>
 
@@ -143,27 +145,43 @@
 
       <div class="comment">
 
-        <div class="user">
+        <div class="info">
 
-          <img class="profile-image" src="../<%=commenterData[index].profilePic%>">
+          <div class="user">
 
-          <% if (commenterData[index].username===currentUser) { %>
+            <img class="profile-image" src="../<%=commenterData[index].profilePic%>">
 
-          <a href="/myprofile">
-            <%=commenterData[index].username %>
-          </a>
+            <% if (commenterData[index].username===currentUser) { %>
 
-          <%} else {%>
+            <a href="/myprofile">
+              <%=commenterData[index].username %>
+            </a>
 
-          <a href="/users/<%=commenterData[index].username %>">
-            <%=commenterData[index].username %>
-          </a>
+            <%} else {%>
 
-          <% };%>
+            <a href="/users/<%=commenterData[index].username %>">
+              <%=commenterData[index].username %>
+            </a>
+
+            <% };%>
+
+          </div>
+
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-comment.time);%>
+          <% var displayTime;%>
+
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+         if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+         if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
+
+          <p class="time">
+            <%= displayTime %>
+          </p>
 
         </div>
 
-        <p><%=comment.comment %></p>
+        <p class="comment-text"><%=comment.comment %></p>
 
       </div>
 

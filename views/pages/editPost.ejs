@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('../partials/head', {pagetitle: 'Karuna | Home' }); %>
+  <link rel="stylesheet" type="text/css" href="/css/home.css">
+  <link rel="stylesheet" type="text/css" href="/css/post.css">
+  <link rel="stylesheet" type="text/css" href="/css/editpost.css">
+
+
+</head>
+
+<body>
+
+  <%- include('../partials/sidenav'); %>
+
+  <div class="main">
+
+    <div class="tab">
+
+      <button class="tablinks">
+        <!-- Goes back to home and saves scroll position -->
+        <a href="javascript:window.history.back();"><i class="fa-solid fa-xmark fa-fw"></i>Cancel</a>
+      </button>
+
+    </div>
+
+    <br>
+    <br>
+
+    <div class="post-container">
+
+      <div class="post">
+
+        <div class="info">
+
+          <div class="user">
+
+            <img class="profile-image" src="../<%=profilePic%>">
+
+
+            <% if (post.postedBy===currentUser) { %>
+
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
+
+            <%} else {%>
+
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
+
+            <% };%>
+
+          </div>
+
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
+
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+           if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+           if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
+
+          <p class="time">
+            <%= displayTime %>
+          </p>
+
+        </div>
+
+        <form action="/editpostdata" enctype="multipart/form-data" method="POST">
+
+          <% if (post.imagePath) { %>
+
+          <div class="image" style="background-image: url('/<%= post.imagePath %>');">
+
+            <div class="image-picker">
+
+              <label>Change Image</label>
+              <br>
+              <input type="file" name="newPic" accept="image/*" />
+
+            </div>
+
+          </div>
+
+          <%} else{%>
+
+          <div class="add-image">
+
+            <label>Add Image</label>
+            <br>
+            <input type="file" name="newPic" accept="image/*" />
+
+          </div>
+
+          <%}%>
+
+        <div class="message">
+          <label>Edit Caption</label>
+          <input type="text" name="caption" placeholder="<%= post.message %>">
+      </div>
+
+    </div>
+
+    <div class="submitBtns">
+
+      <input type='hidden' value='<%=post._id %>' name='postid' />
+
+      <button type="submit" class="stdBtn">
+        <i class="fa-solid fa-floppy-disk fa-fw"></i>Save Changes
+      </button>
+
+      </form>
+
+      <button class="stdBtn" style="background-color: firebrick;">
+        <a href="/deletepost/<%=post._id %>">
+          <i class="fa-solid fa-trash fa-fw"></i>Delete post
+        </a>
+      </button>
+
+
+
+    </div>
+
+
+
+
+  </div>
+
+  </div>
+
+  </div>
+
+
+  </div>
+
+
+
+
+
+</body>

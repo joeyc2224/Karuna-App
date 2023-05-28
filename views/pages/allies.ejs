@@ -2,124 +2,140 @@
 <html lang="en">
 
 <head>
-    <%- include('../partials/head', {pagetitle: 'Karuna | Allies' }); %>
-        <link rel="stylesheet" type="text/css" href="css/allies.css">
+  <%- include('../partials/head', {pagetitle: 'Karuna | Allies' }); %>
+  <link rel="stylesheet" type="text/css" href="css/allies.css">
 </head>
 
 <body>
 
-    <%- include('../partials/sidenav'); %>
+  <%- include('../partials/sidenav'); %>
 
-        <div class="main">
+  <div class="main">
 
-            <h2>Allies</h2>
-            <hr>
+    <h2>Allies</h2>
 
-            <div id="post-container">
+    <div class="post-container">
 
-                <% posts.forEach(function(post) { %>
-                    <div class="post">
+      <% let index=0; %>
+      <% posts.forEach(function(post) { %>
 
-                        <% if (post.postedBy===currentUser) { %>
+      <div class="post">
 
-                            <a href="/myprofile">
-                                <%= post.postedBy %>
-                            </a>
+        <div class="info">
 
-                            <%} else {%>
+          <div class="user">
 
-                                <a href="/users/<%= post.postedBy %>">
-                                    <%= post.postedBy %>
-                                </a>
+            <img class="profile-image" src="../<%=profilePics[index]%>">
 
-                                <% };%>
+            <% if (post.postedBy===currentUser) { %>
 
-                                    <% if (post.mood===5) { %>
-                                        <p class="mood">
-                                            Currently feeling: &#128512;Great
-                                        </p>
-                                        <%} else if(post.mood===4){%>
-                                            <p class="mood">
-                                                Currently feeling: &#128578;Good
-                                            </p>
-                                            <% } else if(post.mood===3){%>
-                                                <p class="mood">
-                                                    Currently feeling: &#128529;Ok
-                                                </p>
-                                                <%} else if(post.mood===2){%>
-                                                    <p class="mood">
-                                                        Currently feeling: &#128530;Bad
-                                                    </p>
-                                                    <% } else if(post.mood===1){%>
-                                                        <p class="mood">
-                                                            Currently feeling: &#128565;Awful
-                                                        </p>
-                                                        <% };%>
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
 
-                                                            <p class="message">
-                                                                <%= post.message %>
-                                                            </p>
+            <%} else {%>
 
-                                                            <% let now=Date.now(); let ellapsed=new Date(now-post.time);
-                                                                let ellapsedMins=ellapsed.getMinutes(); let
-                                                                ellapsedHours=ellapsed.getHours() - 1; let
-                                                                ellapsedDays=ellapsed.getDate() - 1; %>
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
 
-                                                                <p class="time">
-                                                                    <%= ellapsedDays + "days " + ellapsedHours + "hrs "
-                                                                        + ellapsedMins %>mins ago
-                                                                </p>
+            <% };%>
 
-                                                                <div class="reaction-container">
+          </div>
 
-                                                                    <form action="/reaction" method="POST"
-                                                                        style="display: flex; align-items:center;"
-                                                                        id="emojiForm">
-                                                                        <div class="custom-select">
-                                                                            <select name="emoji">
-                                                                                <option>➕</option>
-                                                                                <option>👏</option>
-                                                                                <option>😜</option>
-                                                                                <option>😔</option>
-                                                                                <option>👍</option>
-                                                                                <option>👎</option>
-                                                                                <option>🙌</option>
-                                                                                <option>😂</option>
-                                                                                <option>❤️</option>
-                                                                            </select>
-                                                                        </div>
 
-                                                                        <input type='hidden' value='<%=post._id %>'
-                                                                            name='postID' />
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
 
-                                                                        <button type="submit" class="emoji-submit"
-                                                                            id="submitBtn">
-                                                                            <i class="fa-solid fa-share"></i>
-                                                                        </button>
-                                                                    </form>
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+                                                    if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+                                                    if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
 
-                                                                    <div style="display: flex; overflow-x: hidden;">
-                                                                        <% post.reactions.forEach(function(reaction) {
-                                                                            %>
-                                                                            <p class="reaction"
-                                                                                title="<%= reaction.username %>">
-                                                                                <%= reaction.reaction %>
-                                                                            </p>
-                                                                            <% }); %>
-                                                                    </div>
-
-                                                                </div>
-
-                                                                <hr>
-
-                    </div>
-                    <% }); %>
-            </div>
-
-            <script type="module" src="scripts/emojiDropdown.js"></script>
-
+          <p class="time">
+            <%= displayTime %>
+          </p>
 
         </div>
+
+
+        <div class="post-content">
+
+          <!-- If mood matches one of these numbers show correspoding emoji - reason only numbers are sent is a workaround for chart.js to work -->
+          <% if (post.mood===5) { %>
+          <p class="mood">
+            Currently feeling: &#128512;Great
+          </p>
+          <%} else if(post.mood===4){%>
+          <p class="mood">
+            Currently feeling: &#128578;Good
+          </p>
+          <% } else if(post.mood===3){%>
+          <p class="mood">
+            Currently feeling: &#128529;Ok
+          </p>
+          <%} else if(post.mood===2){%>
+          <p class="mood">
+            Currently feeling: &#128530;Bad
+          </p>
+          <% } else if(post.mood===1){%>
+          <p class="mood">
+            Currently feeling: &#128565;Awful
+          </p>
+          <% };%>
+
+          <p class="message">
+            <%= post.message %>
+          </p>
+
+        </div>
+
+
+        <div class="reaction-container">
+          <!-- custom emoji select dropdown - adapted from https://www.w3schools.com/howto/howto_custom_select.asp  -->
+
+          <form action="/reaction" method="POST" style="display: flex; align-items:center;" id="emojiForm">
+            <div class="custom-select">
+              <select name="emoji">
+                <option>➕</option>
+                <option>👏</option>
+                <option>😜</option>
+                <option>😔</option>
+                <option>👍</option>
+                <option>👎</option>
+                <option>🙌</option>
+                <option>😂</option>
+                <option>❤️</option>
+              </select>
+            </div>
+
+            <input type='hidden' value='<%=post._id %>' name='postID' />
+
+            <button type="submit" class="emoji-submit" id="submitBtn">
+              <i class="fa-solid fa-share"></i>
+            </button>
+          </form>
+
+          <div style="display: flex; overflow-x: hidden;">
+            <% post.reactions.forEach(function(reaction) {
+                                                                            %>
+            <p class="reaction" title="<%= reaction.username %>">
+              <%= reaction.reaction %>
+            </p>
+            <% }); %>
+          </div>
+
+        </div>
+
+      </div>
+      <% index++ %>
+      <% }); %>
+    </div>
+
+    <script type="module" src="scripts/emojiDropdown.js"></script>
+
+
+  </div>
 
 </body>
 

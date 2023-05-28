@@ -27,7 +27,7 @@ const userSchema = new Schema({
     }]
 });
 
-//create salt and hash when a password is changed
+//BCRYPT PASSWORD FUNCTIONS - adapted from https://stackoverflow.com/a/76279982
 userSchema.pre("save", async function (next) {
 
     if ((this.isModified && this.isModified("password"))) {
@@ -37,7 +37,7 @@ userSchema.pre("save", async function (next) {
 
 });
 
-userSchema.pre(["updateOne", "findByIdAndUpdate", "findOneAndUpdate"], async function (next) {
+userSchema.pre(["updateOne", "findByIdAndUpdate", "findOneAndUpdate"], async function (next) {//when password is updated, rehash
 
     const data = this.getUpdate();
     if (data.password) {
@@ -50,9 +50,14 @@ userSchema.pre(["updateOne", "findByIdAndUpdate", "findOneAndUpdate"], async fun
 
 const Users = model('Users', userSchema);//users collection in Karuna database
 
-
+//add new user - from class mostly
 async function newUser(username, password) {
-    const user = { username: username, password: password, loggedin: false }
+    const user = {
+        username: username,
+        password: password,
+        loggedin: false,
+    }
+
     await Users.create(user)
         .catch(err => {
             console.log('Error:' + err)
@@ -72,6 +77,7 @@ async function getUsers() {
     return data;
 }
 
+//return just the user object ID
 async function getUser_id(username) {
     let user = null
     await Users.findOne({ username: username }).exec()
@@ -84,6 +90,7 @@ async function getUser_id(username) {
     return user._id;
 }
 
+//find one user - from class
 async function findUser(username) {
     let user = null
     await Users.findOne({ username: username }).exec()
@@ -108,7 +115,7 @@ async function findUserById(id) {
     return user;
 }
 
-// find profile picture based on user search
+// find profile picture based on user search - adapted from findUser above 
 async function getProfilePic(username) {
     let user = null
     await Users.findOne({ username: username }).exec()
@@ -119,13 +126,14 @@ async function getProfilePic(username) {
             console.log('Error:' + err)
         });
 
-    if (!user.profilePic) {
+    if (!user.profilePic) {//if no picture, send default user image
         return "/images/user.png"
     } else {
         return user.profilePic
     }
 }
 
+//password check - works with Bcrypt, not my code
 async function checkPassword(username, password, action) {
     let user = await findUser(username)
     bcrypt.compare(password, user.password)
@@ -137,6 +145,7 @@ async function checkPassword(username, password, action) {
         })
 }
 
+//set user as logged in - from class
 async function setLoggedIn(username, state) {
     let user = await findUser(username)
     if (user) {
@@ -153,7 +162,7 @@ async function isLoggedIn(username) {
     return false
 }
 
-//FOLLOWER FUNCTIONS
+//FOLLOWER FUNCTIONS - adds usernames to following list and follower lists - my own code
 async function followUser(followee, follower) {
 
     let newFollower = {
@@ -184,7 +193,7 @@ async function unfollowUser(followee, follower) {
 
 
 
-//ALLY FUNCTIONS
+//ALLY FUNCTIONS - my own code, works similar to following above but with additional request feature
 async function requestAlly(recipient, sender) {
 
     let newRequest = {
@@ -231,14 +240,14 @@ async function removeAlly(ally1, ally2) {
 
     console.log(currentUser, otherUser)
 
-    await Users.findOneAndUpdate({ username: ally1 }, { $pull: { allies: otherUser } }).exec()
+    await Users.findOneAndUpdate({ username: ally1 }, { $pull: { allies: otherUser } }).exec()//pull users from each others allies array
     await Users.findOneAndUpdate({ username: ally2 }, { $pull: { allies: currentUser } }).exec()
 }
 
 
 
 
-//EDIT PROFILE
+//EDIT PROFILE - own code
 async function editProfile(user, data, imageFile) {
 
     if (imageFile) {//if pic is changed
@@ -271,6 +280,7 @@ async function editProfile(user, data, imageFile) {
 
             userData = await findUser(user)
 
+            //code below goes through process of changing all occurances of the old username in the allies and followers arrays - should of user IDs more
             for (const ally of userData.allies) {//update allies names
 
                 let oldUsername = {

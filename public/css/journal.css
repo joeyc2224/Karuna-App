@@ -1,3 +1,12 @@
+.main {
+    text-align: center;
+}
+
+.central-container{
+    max-width: 800px;
+    margin: auto;
+}
+
 .tab {
     overflow: hidden;
     background-color: #4b4b4b;

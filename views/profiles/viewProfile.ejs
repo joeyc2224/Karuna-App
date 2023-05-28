@@ -4,142 +4,305 @@
 <head>
   <%- include('../partials/head', {pagetitle: 'Karuna | Profile' }); %>
   <link rel="stylesheet" type="text/css" href="/css/profile.css">
+  <link rel="stylesheet" type="text/css" href="/css/home.css">
+
 </head>
 
 <body>
 
   <%- include('../partials/sidenav'); %>
 
-  <div class="main profile">
+  <div class="main">
 
-    <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src="/<%=
-                    user.profilePic %>" <% } %>>
+    <div class="main-profile">
 
-    <h2>
-      <%= user.username %>
-    </h2>
+      <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src="/<%=
+                      user.profilePic %>" <% } %>>
 
-    <p>
-      <%= user.bio %>
-    </p>
+      <h2>
+        <%= user.username %>
+      </h2>
 
-    <!-- <form action='/follow' method='post'>
-                            <input type='hidden' value='<%= user.username %>' name='name' />
-                            <button type="submit" class="stdBtn">
-                                <i class="fa-solid fa-plus"></i>Follow
-                            </button>
-                        </form> -->
+      <p>
+        <%= user.bio %>
+      </p>
 
-    <div style="display: flex; justify-content: center;">
+      <div style="display: flex; justify-content: center;">
 
-      <!-- Follow Button -->
-      <% let following=false %>
+        <!-- Follow Button -->
+        <% let following=false %>
 
-      <% for (var i=0; i < user.followers.length; i++) { %>
+        <% for (var i=0; i < user.followers.length; i++) { %>
 
-      <% if (user.followers[i].username===currentUser) { following=true; break; }} %>
+        <% if (user.followers[i].username===currentUser) { following=true; break; }} %>
 
-      <% if(following==true) { %>
+        <% if(following==true) { %>
 
-      <form action='/unfollow' method='post'>
-        <input type='hidden' value='<%= user.username %>' name='name' />
-        <button type="submit" class="stdBtn">
-          <i class="fa-solid fa-minus"></i>Unfollow
+        <button class="stdBtn">
+          <a href="/unfollow/<%=user.username %>/VP">
+            <i class="fa-solid fa-user-minus fa-fw"></i>Unfollow
+          </a>
         </button>
-      </form>
+
+        <%} else {%>
+
+        <form action='/follow' method='post'>
+          <input type='hidden' value='<%= user.username %>' name='name' />
+          <button type="submit" class="stdBtn">
+            <i class="fa-solid fa-plus"></i>Follow
+          </button>
+        </form>
+
+        <% }%>
+
+
+        <!-- Allies button -->
+        <% let allies=false %>
+
+        <% for (var i=0; i < user.allies.length; i++) { %>
+
+        <!-- if already ally -->
+        <% if (user.allies[i].username===currentUser) { allies=true;
+                                                                  break; }} %>
+
+        <% if(allies==true) { %>
+
+        <button class="stdBtn" style="background-color: firebrick;">
+          <a href="/removeally/<%=user.username %>/VP">
+            <i class="fa-solid fa-user-minus fa-fw"></i>Remove Ally
+          </a>
+        </button>
+
+        <%} else{%>
+
+        <% let requested=false %>
+
+        <% for (var i=0; i < user.requests.length;i++) { %>
+
+        <% if (user.requests[i].username===currentUser) { requested=true; break; }} %>
+
+        <% if(requested==true) { %>
+
+        <form action='/unrequestally' method='post'>
+          <input type='hidden' value='<%= user.username %>' name='name' />
+          <button type="submit" class="stdBtn" style="background-color: firebrick;">
+            <i class="fa-solid fa-minus fa-fw"></i>Remove
+            Request
+          </button>
+        </form>
+
+        <%} else{%>
+
+        <form action='/requestally' method='post'>
+          <input type='hidden' value='<%= user.username %>' name='name' />
+          <button type="submit" class="stdBtn">
+            <i class="fa-solid fa-user-plus fa-fw"></i>Request
+            Ally
+          </button>
+        </form>
+
+        <% }}%>
+
+
+      </div>
+
+      <div class="stats">
+
+        <div>
+          <p class="title">
+            Followers
+          </p>
+
+          <p>
+            <%= user.followers.length %>
+          </p>
+        </div>
+
+        <div>
+          <p class="title">
+            Following
+          </p>
+
+          <p>
+            <%= user.following.length %>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+    <!-- show user's recent public posts -->
+    <div class="post-container">
+
+      <h3 style="text-align: left; margin-top: 100px; margin-bottom: 10px;">Recent posts</h3>
+
+      <% if (!userPosts.length) { %>
+
+      <p><%= user.username %> hasn't posted yet.</p>
 
       <%} else {%>
 
-      <form action='/follow' method='post'>
-        <input type='hidden' value='<%= user.username %>' name='name' />
-        <button type="submit" class="stdBtn">
-          <i class="fa-solid fa-plus"></i>Follow
-        </button>
-      </form>
+      <% let index=0; %>
+      <!-- for iterating profile pic list -->
 
-      <% }%>
+      <% userPosts.forEach(function(post) { %>
+
+      <div class="post">
 
 
-      <!-- Allies button -->
-      <% let allies=false %>
+        <div class="info">
 
-      <% for (var i=0; i < user.allies.length; i++) { %>
+          <div class="user">
 
-      <!-- if already ally -->
-      <% if (user.allies[i].username===currentUser) { allies=true;
-                                                                break; }} %>
+            <img class="profile-image" <% if (!user.profilePic) { %> src="/images/user.png" <% } else { %> src="/<%=
+            user.profilePic %>" <% } %>>
 
-      <% if(allies==true) { %>
+            <% if (post.postedBy===currentUser) { %>
 
-      <form action='/removeally' method='post'>
-        <input type='hidden' value='<%= user.username %>' name='name' />
-        <input type='hidden' value='<%= user._id %>' name='id' />
-        <button type="submit" class="stdBtn" style="background-color: firebrick;">
-          <i class="fa-solid fa-user-minus fa-fw"></i>Remove Ally
-        </button>
-      </form>
+            <a href="/myprofile">
+              <%= post.postedBy %>
+            </a>
 
-      <%} else{%>
+            <%} else {%>
 
-      <% let requested=false %>
+            <a href="/users/<%= post.postedBy %>">
+              <%= post.postedBy %>
+            </a>
 
-      <% for (var i=0; i < user.requests.length;i++) { %>
+            <% };%>
 
-      <% if (user.requests[i].username===currentUser) { requested=true; break; }} %>
-
-      <% if(requested==true) { %>
-
-      <form action='/unrequestally' method='post'>
-        <input type='hidden' value='<%= user.username %>' name='name' />
-        <button type="submit" class="stdBtn" style="background-color: firebrick;">
-          <i class="fa-solid fa-minus fa-fw"></i>Remove
-          Request
-        </button>
-      </form>
-
-      <%} else{%>
-
-      <form action='/requestally' method='post'>
-        <input type='hidden' value='<%= user.username %>' name='name' />
-        <button type="submit" class="stdBtn">
-          <i class="fa-solid fa-user-plus fa-fw"></i>Request
-          Ally
-        </button>
-      </form>
-
-      <% }}%>
+          </div>
 
 
-    </div>
+          <% let now=Date.now(); %>
+          <% let ellapsed=new Date(now-post.time);%>
+          <% var displayTime;%>
 
+          <% if (ellapsed.getHours() - 1===0){displayTime=ellapsed.getMinutes() + " mins ago" } 
+                                                    if(ellapsed.getHours() - 1 > 0){displayTime=ellapsed.getHours() -1 + " hours ago"}
+                                                    if(ellapsed.getDate() - 1 > 0){displayTime=ellapsed.getDate() -1 + " days ago"}%>
 
+          <p class="time">
+            <%= displayTime %>
+          </p>
 
+        </div>
 
-    <div class="stats">
+        <% if (post.imagePath) { %>
+        <img class="post-image" src="/<%= post.imagePath %>">
+        <%}%>
 
-      <div>
-        <p class="title">
-          Followers
+                                        <p class="message">
+                                            <%= post.message %>
         </p>
 
-        <p>
-          <%= user.followers.length %>
-        </p>
+
+        <div class="action-buttons">
+
+          <% let liked=false %>
+
+          <% for (var i=0; i < post.likedBy.length; i++) { %>
+
+          <% if (post.likedBy[i].username===currentUser) { liked=true; break;
+                                                        }} %>
+
+          <% if(liked==true) { %>
+
+          <button class="actionBtn" onclick="removeLike('<%=post._id %>')" id=<%=post._id %> class="like-btn">
+            <i class="fa-solid fa-heart"></i>
+            <%= post.likes %>
+          </button>
+
+          <%} else {%>
+
+          <button class="actionBtn" onclick="addLike('<%=post._id %>')" id=<%=post._id%>>
+            <i class="fa-regular fa-heart fa-fw"></i>
+            <%= post.likes %>
+          </button>
+
+          <% }%>
+
+
+          <button class="actionBtn">
+            <a href="/post/<%=post._id %>">
+              <i class="fa-solid fa-comment fa-fw"></i>
+              <%= post.comments.length %>
+            </a>
+          </button>
+
+          <% if (post.postedBy===currentUser) { %>
+
+          <button class="actionBtn">
+            <a href="/editpost/<%=post._id %>">
+              <i class="fa-solid fa-pen-to-square fa-fw"></i>
+              Edit
+            </a>
+          </button>
+
+          <% }%>
+
+        </div>
+
       </div>
 
-      <div>
-        <p class="title">
-          Following
-        </p>
+      <% index++ %>
 
-        <p>
-          <%= user.following.length %>
-        </p>
-      </div>
-
+      <% })}; %>
     </div>
 
   </div>
+
+
+
+  <script>
+    //LIKE POST SCRIPT
+    function addLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/like', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-solid fa-heart fa-fw"></i>' + fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            removeLike(postID)
+          };
+        })
+    }
+
+    function removeLike(postID) {
+      let options = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          likedPostID: postID
+        })
+      }
+      fetch('/unlike', options)
+        .then(response => response.json())
+        .then(fetchedData => {
+          document.getElementById(postID).innerHTML = '<i class="fa-regular fa-heart fa-fw"></i>' +
+            fetchedData.likeNum
+          document.getElementById(postID).onclick = function() {
+            addLike(postID)
+          };
+        })
+    }
+  </script>
+
+
 
 </body>
 

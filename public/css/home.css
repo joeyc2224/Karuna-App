@@ -20,7 +20,7 @@
   margin: 0px;
 }
 
-.post .message{
+.post .message {
   margin: 0px;
   background-color: #1a1a1a;
   color: white;
@@ -98,7 +98,7 @@
   opacity: .80;
 }
 
-.actionBtn a{
+.actionBtn a {
   text-decoration: none;
   color: inherit;
 }
@@ -165,14 +165,22 @@
   overflow: auto;
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
+
 }
 
 .modal-content {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
+  max-width: 800px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.modal-content h1 {
+  margin-top: -5px;
+  font-size: 35px;
+
 }
 
 .close {
@@ -180,6 +188,7 @@
   float: right;
   font-size: 28px;
   font-weight: bold;
+  margin-top: -10px;
 }
 
 .close:hover,
@@ -189,7 +198,48 @@
   cursor: pointer;
 }
 
-/* post modal button styling*/
+label {
+  text-transform: uppercase;
+  margin: 10px;
+  font-weight: 500;
+  font-size: 25px;
+}
+
+.image-input{
+  margin-top: 50px;
+}
+
+.image-input input button{
+margin: auto;
+text-align: center;
+}
+
+.caption-input input {
+  margin-top: 40px;
+  background-color: white;
+  border: 1px solid #1a1a1a;
+  outline: none;
+  border-radius: 4px;
+  padding: 5px 5px;
+  resize: none;
+  width: 50%;
+  height: 25px;
+  margin-bottom: 40px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* new post button styling*/
 .btn {
   font-size: 42px;
   line-height: 100%;
