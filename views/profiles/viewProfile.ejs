@@ -27,7 +27,31 @@
         <%= user.bio %>
       </p>
 
-      <div style="display: flex; justify-content: center;">
+      <div class="stats">
+
+        <div>
+          <p class="title">
+            Followers
+          </p>
+
+          <p class="count">
+            <%= user.followers.length %>
+          </p>
+        </div>
+
+        <div>
+          <p class="title">
+            Following
+          </p>
+
+          <p class="count">
+            <%= user.following.length %>
+          </p>
+        </div>
+
+      </div>
+
+      <div style="display: flex; justify-content: center; align-items: center;">
 
         <!-- Follow Button -->
         <% let following=false %>
@@ -106,29 +130,7 @@
 
       </div>
 
-      <div class="stats">
 
-        <div>
-          <p class="title">
-            Followers
-          </p>
-
-          <p>
-            <%= user.followers.length %>
-          </p>
-        </div>
-
-        <div>
-          <p class="title">
-            Following
-          </p>
-
-          <p>
-            <%= user.following.length %>
-          </p>
-        </div>
-
-      </div>
 
     </div>
 
@@ -138,7 +140,7 @@
     <!-- show user's recent public posts -->
     <div class="post-container">
 
-      <h3 style="text-align: left; margin-top: 100px; margin-bottom: 10px;">Recent posts</h3>
+      <h3 style="text-align: left; margin-top: 50px; margin-bottom: 10px;">Recent posts</h3>
 
       <% if (!userPosts.length) { %>
 

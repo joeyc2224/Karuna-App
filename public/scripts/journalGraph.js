@@ -2,7 +2,7 @@ let logList = []
 const moodList = []
 const dateList = []
 
-fetch('/getmooddata')
+fetch('/getmooddata')//get the user journal history
     .then(response => response.json())
     .then(fetchedData => {
         logList = fetchedData.logs

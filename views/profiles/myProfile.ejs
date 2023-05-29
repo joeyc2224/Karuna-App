@@ -87,14 +87,14 @@
         }
       </script>
 
-      <div class="stats">
+      <!-- <div class="stats">
 
         <div>
           <p class="title">
             Followers
           </p>
 
-          <p>
+          <p class="count">
             <%= user.followers.length %>
           </p>
         </div>
@@ -104,17 +104,17 @@
             Following
           </p>
 
-          <p>
+          <p class="count">
             <%= user.following.length %>
           </p>
         </div>
 
-      </div>
+      </div> -->
 
       <div class="tabs">
-        <button class="tabslinks" onclick="openTab(event, 'allies')" id="defaultOpen">Allies</button>
-        <button class="tabslinks" onclick="openTab(event, 'following')">Following</button>
-        <button class="tabslinks" onclick="openTab(event, 'followers')">Followers</button>
+        <button class="tabslinks" onclick="openTab(event, 'allies')" id="defaultOpen"><%= user.allies.length %> &nbsp; Allies</button>
+        <button class="tabslinks" onclick="openTab(event, 'following')"><%= user.following.length %> &nbsp; Following</button>
+        <button class="tabslinks" onclick="openTab(event, 'followers')"><%= user.followers.length %> &nbsp; Followers</button>
       </div>
 
       <div id="allies" class="tabcontent">
